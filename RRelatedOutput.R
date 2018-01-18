@@ -12,8 +12,14 @@ args <- commandArgs(trailingOnly = TRUE)
 #rs = "/Users/chengguo/Desktop/Hengchuang/M231/exported/dna-sequences.fasta"
 map = args[1]
 category1 = args[2]
+
+#category1 = "SampleType"
+#map = "~/Desktop/Hengchuang/M122/M122_Mapping.tsv"
+
 #category1 = "Group1"
 #map = "/Users/chengguo/Desktop/Hengchuang/M231/M231_Mapping_2.tsv"
+
+
 this.dir <- dirname(parent.frame(2)$map)
 new.dir <- paste(this.dir, "/R_output", sep="")
 setwd(new.dir)
@@ -21,6 +27,12 @@ setwd(new.dir)
 txt = paste(this.dir, "/exported/feature-table.ConsensusLineage.txt", sep="")
 tre = paste(this.dir, "/exported/tree.rooted.nwk", sep="")
 rs = paste(this.dir, "/exported/dna-sequences.fasta", sep="")
+
+print("#Start reading realted files with Phyloseq")
+print(map)
+print(txt)
+print(tre)
+print(rs)
 
 qiimedata = import_qiime(txt, map, tre, rs)
 
@@ -30,7 +42,7 @@ gpt <- prune_taxa(names(sort(taxa_sums(gpt),TRUE)), gpt)
 
 head(tax_table(gpt)[,2])
 
-#Generate phylogenetic trees for common phylums
+print("#Generate phylogenetic trees for common phylums")
 for (selected_phylum in c('Bacteroidetes','Firmicutes','Proteobacteria')){
   print(paste("Making tree plots for", selected_phylum, sep=" "))
   GP.chl <- subset_taxa(gpt, Phylum==selected_phylum)
@@ -46,7 +58,7 @@ plot<-plot_tree(gpt, color="Group1", shape="Phylum", label.tips="Family", size="
 print(plot + ggtitle("Bacteria"))
 dev.off()
 
-#Generate the NMDS plot for betadiversity
+print("#Generate the NMDS plot for betadiversity")
 for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
   GP.ord <- ordinate(gpt, "NMDS", distance_matrix)
   NMDS_outputpdfname <- paste(distance_matrix, "_NMDS.pdf", sep="")
@@ -57,7 +69,7 @@ for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
   dev.off()
 }
 
-#calculate distance
+print("#calculate distance")
 for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
   beta_heatmap_outputpdfname <- paste(distance_matrix, "_betadiversity_heatmap.pdf", sep="")
   pdf(beta_heatmap_outputpdfname)

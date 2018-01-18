@@ -150,6 +150,9 @@
 │   ├── tree.feature-table.metagenome.L3.svg 				PICRUSt结果三级功能树图	
 │   ├── unmatched_sequences.qza  							功能分析中间文件
 │   └── unmatched_sequences.qzv 							功能分析中间文件
+├── 7-AssociationAnalysis								7-AssociationAnalysis	
+│   ├── Phylum.rda.pdf 										RDA在门水平结果
+│   └── permanova.pdf 										PERMANOVA结果
 ├── FigureandTable 										FigureandTable表格及图表文件夹
 │   ├── Figure3-1.svg -> ../2-OTUAnalysis/Classified_stat_relative.svg
 │   ├── Figure3-10.pdf -> ../4-BetaDiversity/unifrac_NMDS.pdf

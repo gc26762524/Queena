@@ -120,7 +120,7 @@ MAIN() {
 
 
 	echo "#Use DADA2 for quality control and feature table construction"
-	qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 340 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+	qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 240 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
 	mv rep-seqs-dada2.qza rep-seqs.withCandM.qza
 	mv table-dada2.qza table.withCandM.qza
 
@@ -266,6 +266,7 @@ MAIN() {
 	biom convert -i phylogeny/feature-table.taxonomy.biom -o phylogeny/feature-table.taxonomy.txt --to-tsv --header-key taxonomy
 	qiime tools export phylogeny/dna-sequences.${min_freq}.rooted-tree.qza --output-dir phylogeny/
 	mv phylogeny/tree.nwk phylogeny/tree.rooted.nwk
+
 
 <<COMMENT3
 	echo "#Generate the absolute directory for enviromental factors relational analysis"
