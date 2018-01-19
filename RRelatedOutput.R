@@ -48,13 +48,13 @@ for (selected_phylum in c('Bacteroidetes','Firmicutes','Proteobacteria')){
   GP.chl <- subset_taxa(gpt, Phylum==selected_phylum)
   phylogeny_outputpdfname <- paste(selected_phylum, ".phylogeny.pdf", sep="")
   pdf( phylogeny_outputpdfname, width=12, height=14)
-  plot<-plot_tree(GP.chl, color="Group1", shape="Family", label.tips="Genus", size="abundance", plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
+  plot<-plot_tree(GP.chl, color=category1, shape="Family", label.tips="Genus", size="abundance", plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
   print(plot+ ggtitle(selected_phylum))
   dev.off()
 }
 
 pdf("Bacteria.phylogeny.pdf", width=12, height=14)
-plot<-plot_tree(gpt, color="Group1", shape="Phylum", label.tips="Family", size="abundance", text.size=2, plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
+plot<-plot_tree(gpt, color=category1, shape="Phylum", label.tips="Family", size="abundance", text.size=2, plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
 print(plot + ggtitle("Bacteria"))
 dev.off()
 

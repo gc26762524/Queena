@@ -15,13 +15,14 @@ close_reference_trained=$8
 manifest_file=$9
 
 if [ -z "$9" ]; then
-	echo "##########source activate qiime2-2017.10 (Activate your current Qiime2)
+	echo "##########
+
 		  Please prepare the directory structure before starting the program like below:
 		  raw/fastq_files ...
 		  mapping_file
 		  manifest_file
-		  RRelatedOutput.R
 		  \n\n"
+
 	echo "Please provide following input parameters
 		1) Full path of the mapping file. (Accept both .csv or txt format.)
 		2) Depth of the for subsampleing. (Suggested value: 4000)
@@ -29,9 +30,9 @@ if [ -z "$9" ]; then
 		4) The name of the first category in the mapping file. (category 1 and 2 don't necessary to be different. You could put category 1 for twice in the commands, the first run will be replaced)
 		5) The name of the second category in the mapping file. (Numeric values for category 2 prefered here)
 		6) The specific type of the first category in the mapping file you want to further investigate.
-		7) Full/relative path of the reference for alignment.
-		8) Full/relative path of the reference for close reference alignment.
-		9) Full/relative path of the manifest file.
+		7) Full path of the reference for alignment.
+		8) Full path of the reference for close reference alignment.
+		9) Full path of the manifest file.
 
 		Sample Usage:
 		sh $0 M231_Mapping_2.tsv 4000 1000 Group1 Group2 A ~/Desktop/Hengchuang/16S_reference/gg-13-8-99-515-806-nb-classifier.qza ~/Desktop/Hengchuang/16S_reference/gg_13_18_97_otus.qza M231_manifest.txt 
@@ -62,12 +63,14 @@ organize_deliverable_structure() {
 	mkdir Result
 	mkdir Result/1-Demux Result/2-OTUAnalysis Result/3-AlphaDiversity Result/4-BetaDiversity Result/5-OTUComparision Result/6-FunctionAnalysis Result/7-AssociationAnalysis Result/FigureandTable
 	cp $READMEORIGINALPATH ./Result/
+	cp $mapping_file ./Result/
 	#cp -r raw demux.qzv demux.qza Result/1-Demux
+	cp -r demux.qzv demux.qza Result/1-Demux
 	cp -r taxa-bar-plots.qzv taxonomy.qzv table.qzv phylogeny exported/feature-table* exported/dna-sequences.fasta exported/tree* exported/1000 exported/Relative/Classified_stat_relative.svg R_output/*phylogeny* Result/2-OTUAnalysis
 	cp -r alpha alpha-rarefaction.qzv core-metrics-results/*evenness* core-metrics-results/*faith* core-metrics-results/*observed* core-metrics-results/*shannon* Result/3-AlphaDiversity
 	cp -r core-metrics-results/*bray_curtis* core-metrics-results/*unifrac* R_output/*matrix* R_output/*NMDS* R_output/*heatmap* Result/4-BetaDiversity 
 	cp -r exported/ANCOM exported/collapsed/table-l7.qzv Result/5-OTUComparision
-	cp -r closedRef_forPICRUSt Result/6-FunctionAnalysis
+	cp -r closedRef_forPICRUSt/* Result/6-FunctionAnalysis
 	cp -r exported/Absolute/*pdf Result/7-AssociationAnalysis
 
 	cd Result/FigureandTable
@@ -99,18 +102,19 @@ organize_deliverable_structure() {
 MAIN() {
 
 	##Activate Qiime2 Version
-	##source activate qiime2-2017.10
+	source activate qiime2-2017.10
+
 
 	echo "Initiate directory name and set up the directory structure"
 	SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 	RSCRIPTORIGINALPATH=${SCRIPTPATH}/RRelatedOutput.R
 	cp $RSCRIPTORIGINALPATH ./
 	READMEORIGINALPATH=${SCRIPTPATH}/Result_README.txt
+	ITOLPERLPATH=${SCRIPTPATH}/generate_file_Itol.pl
 
 	#echo "#Demultiplexing the sequence file"
 	#qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-category BarcodeSequence  --o-per-sample-sequences demux.qza
 	#qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
-
 
 	echo "#Set up the directory structure and prepare the raw fastq sequences."
 	check_file $manifest_file
@@ -266,6 +270,7 @@ MAIN() {
 	biom convert -i phylogeny/feature-table.taxonomy.biom -o phylogeny/feature-table.taxonomy.txt --to-tsv --header-key taxonomy
 	qiime tools export phylogeny/dna-sequences.${min_freq}.rooted-tree.qza --output-dir phylogeny/
 	mv phylogeny/tree.nwk phylogeny/tree.rooted.nwk
+	perl $ITOLPERLPATH phylogeny/feature-table.taxonomy.txt 
 
 <<COMMENT3
 	echo "#Generate the absolute directory for enviromental factors relational analysis"
