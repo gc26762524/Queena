@@ -102,7 +102,7 @@ organize_deliverable_structure() {
 MAIN() {
 
 	##Activate Qiime2 Version
-	source activate qiime2-2017.12
+	source activate qiime2-2017.10
 
 
 	echo "Initiate directory name and set up the directory structure"
@@ -115,7 +115,7 @@ MAIN() {
 	#echo "#Demultiplexing the sequence file"
 	#qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-category BarcodeSequence  --o-per-sample-sequences demux.qza
 	#qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
-<<COMMENT1
+
 	echo "#Set up the directory structure and prepare the raw fastq sequences."
 	check_file $manifest_file
 	#qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred64
@@ -152,6 +152,7 @@ MAIN() {
 	qiime alignment mask   --i-alignment aligned-rep-seqs.qza   --o-masked-alignment masked-aligned-rep-seqs.qza
 	qiime phylogeny fasttree   --i-alignment masked-aligned-rep-seqs.qza   --o-tree unrooted-tree.qza
 	qiime phylogeny midpoint-root   --i-tree unrooted-tree.qza   --o-rooted-tree rooted-tree.qza
+
 
 	echo "#Core alpha and beta diversity analysis"
 	qiime diversity core-metrics-phylogenetic   --i-phylogeny rooted-tree.qza   --i-table table.qza   --p-sampling-depth $depth   --m-metadata-file $mapping_file  --output-dir core-metrics-results
@@ -228,7 +229,7 @@ MAIN() {
 		qiime composition ancom  --i-table exported/ANCOM/composition.l${n2}.qza --m-metadata-file $mapping_file --m-metadata-category $category_2 --o-visualization exported/ANCOM/SecondaryGroup/ANCOM.l${n2}.qzv;
 	done;
 
-COMMENT1
+
 	echo "#Run for PICRUST analysis and STAMP visulization"
 	qiime vsearch cluster-features-closed-reference --i-sequences rep-seqs.qza --i-table table.qza --i-reference-sequences $close_reference_trained --p-perc-identity 0.97 --p-threads 0 --output-dir closedRef_forPICRUSt
 	qiime feature-table summarize --i-table closedRef_forPICRUSt/clustered_table.qza --o-visualization closedRef_forPICRUSt/clustered_table.qzv --m-sample-metadata-file $mapping_file
@@ -257,14 +258,13 @@ COMMENT1
 	done;	
 	cd ..
 
-
 	echo "#Make phylogenetic trees for ITOL"
 	mkdir phylogeny
 	qiime feature-table filter-features --i-table table.qza --p-min-frequency $min_freq --o-filtered-table phylogeny/table.${min_freq}.qza
 	qiime tools export phylogeny/table.${min_freq}.qza --output-dir phylogeny
 	biom convert -i phylogeny/feature-table.biom -o phylogeny/feature-table.txt --to-tsv
 	cut -f1 phylogeny/feature-table.txt | tail -n +3 > phylogeny/feature-table.list
-	~/cheng/pipelines/Queena/seqtk subseq exported/dna-sequences.fasta phylogeny/feature-table.list > phylogeny/dna-sequences.${min_freq}.fasta
+	${SCRIPTPATH}/seqtk subseq exported/dna-sequences.fasta phylogeny/feature-table.list > phylogeny/dna-sequences.${min_freq}.fasta
 	qiime tools import   --input-path phylogeny/dna-sequences.${min_freq}.fasta  --output-path phylogeny/dna-sequences.${min_freq}.qza   --type 'FeatureData[Sequence]'
 	qiime alignment mafft   --i-sequences phylogeny/dna-sequences.${min_freq}.qza  --o-alignment phylogeny/dna-sequences.${min_freq}.aligned.qza
 	qiime alignment mask   --i-alignment phylogeny/dna-sequences.${min_freq}.aligned.qza   --o-masked-alignment phylogeny/dna-sequences.${min_freq}.aligned.masked.qza
