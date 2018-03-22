@@ -65,8 +65,8 @@ organize_deliverable_structure() {
 	cp $READMEORIGINALPATH ./Result/
 	cp $mapping_file ./Result/
 	#cp -r raw demux.qzv demux.qza Result/1-Demux
-	cp -r demux.qzv demux.qza Result/1-Demux
-	cp -r taxa-bar-plots.qzv taxonomy.qzv table.qzv phylogeny exported/feature-table* exported/dna-sequences.fasta exported/tree* exported/1000 exported/Relative/Classified_stat_relative.svg R_output/*phylogeny* Result/2-OTUAnalysis
+	cp -r demux.qzv Result/1-Demux
+	cp -r taxa-bar-plots.qzv taxonomy.qzv table.qzv rep-seqs.qzv phylogeny exported/feature-table* exported/dna-sequences.fasta exported/tree* exported/1000 exported/Relative exported/Relative/Classified_stat_relative.svg R_output/*phylogeny* Result/2-OTUAnalysis
 	cp -r alpha alpha-rarefaction.qzv core-metrics-results/*evenness* core-metrics-results/*faith* core-metrics-results/*observed* core-metrics-results/*shannon* Result/3-AlphaDiversity
 	cp -r core-metrics-results/*bray_curtis* core-metrics-results/*unifrac* R_output/*matrix* R_output/*NMDS* R_output/*heatmap* Result/4-BetaDiversity 
 	cp -r exported/ANCOM exported/collapsed/table-l7.qzv Result/5-OTUComparision
@@ -102,7 +102,7 @@ organize_deliverable_structure() {
 MAIN() {
 
 	##Activate Qiime2 Version
-	source activate qiime2-2017.10
+	source activate qiime2-2018.2
 
 
 	echo "Initiate directory name and set up the directory structure"
@@ -112,19 +112,32 @@ MAIN() {
 	READMEORIGINALPATH=${SCRIPTPATH}/Result_README.txt
 	ITOLPERLPATH=${SCRIPTPATH}/generate_file_Itol.pl
 
-	#echo "#Demultiplexing the sequence file"
-	#qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-category BarcodeSequence  --o-per-sample-sequences demux.qza
+	echo "#Demultiplexing the single-end sequence file"
+	qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza
+	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
+
+	#echo "#Demultiplexing the paired-end sequence file"
+	#qiime demux emp-paired --i-seqs emp-paired-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza
 	#qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
 
+
+<<COMMENT1
 	echo "#Set up the directory structure and prepare the raw fastq sequences."
 	check_file $manifest_file
 	#qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred64
-	qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred33
+	#single-end
+	#qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred33
+	#paired-end
+	qiime tools import   --type 'SampleData[PairedEndSequencesWithQuality]'  --input-path $manifest_file --output-path demux.qza --source-format PairedEndFastqManifestPhred33
 	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
-
+COMMENT1
 
 	echo "#Use DADA2 for quality control and feature table construction"
+	#single-end
 	qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 240 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+	#paired-end
+	#qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 210 --p-trunc-len-r 210 --p-trim-left-f 24 --p-trim-left-r 25 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+
 	mv rep-seqs-dada2.qza rep-seqs.withCandM.qza
 	mv table-dada2.qza table.withCandM.qza
 
@@ -132,7 +145,9 @@ MAIN() {
 	echo "#Filter out Choloroplast and Mitochondira"
 	check_file $reference_trained
 	qiime feature-classifier classify-sklearn   --i-classifier $reference_trained  --i-reads rep-seqs.withCandM.qza  --o-classification taxonomy.withCandM.qza
-	qiime taxa filter-table   --i-table table.withCandM.qza  --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast   --o-filtered-table table-no-mitochondria-no-chloroplast.qza
+
+
+	qiime taxa filter-table   --i-table table.withCandM.qza  --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast,Archaea,Unassigned  --o-filtered-table table-no-mitochondria-no-chloroplast.qza
 	mv table-no-mitochondria-no-chloroplast.qza table.qza
 	qiime taxa filter-seqs   --i-sequences rep-seqs.withCandM.qza   --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast   --o-filtered-sequences rep-seqs-no-mitochondria-no-chloroplast.qza
 	mv rep-seqs-no-mitochondria-no-chloroplast.qza rep-seqs.qza
@@ -141,6 +156,8 @@ MAIN() {
 	echo "#Classify the taxonomy"
 	qiime feature-classifier classify-sklearn   --i-classifier $reference_trained  --i-reads rep-seqs.qza  --o-classification taxonomy.qza
 	qiime metadata tabulate   --m-input-file taxonomy.qza   --o-visualization taxonomy.qzv
+
+
 	qiime taxa barplot   --i-table table.qza   --i-taxonomy taxonomy.qza   --m-metadata-file $mapping_file  --o-visualization taxa-bar-plots.qzv
 
 	echo "#Visulize of the table without Choloroplast and Mitochondira"
@@ -152,6 +169,7 @@ MAIN() {
 	qiime alignment mask   --i-alignment aligned-rep-seqs.qza   --o-masked-alignment masked-aligned-rep-seqs.qza
 	qiime phylogeny fasttree   --i-alignment masked-aligned-rep-seqs.qza   --o-tree unrooted-tree.qza
 	qiime phylogeny midpoint-root   --i-tree unrooted-tree.qza   --o-rooted-tree rooted-tree.qza
+
 
 
 	echo "#Core alpha and beta diversity analysis"
@@ -244,7 +262,7 @@ MAIN() {
 	categorize_by_function.py -i closedRef_forPICRUSt/feature-table.metagenome.biom -o closedRef_forPICRUSt/feature-table.metagenome.L3.txt -c KEGG_Pathways -l 3 -f
 
 
-	${SCRIPTPATH}biom_to_stamp.py -m KEGG_Pathways closedRef_forPICRUSt/feature-table.metagenome.biom > closedRef_forPICRUSt/feature-table.metagenome.KEGG_Pathways.STAMP.spf
+	${SCRIPTPATH}/biom_to_stamp.py -m KEGG_Pathways closedRef_forPICRUSt/feature-table.metagenome.biom > closedRef_forPICRUSt/feature-table.metagenome.KEGG_Pathways.STAMP.spf
 
 	cd closedRef_forPICRUSt
 	for n3 in 1 2 3;
