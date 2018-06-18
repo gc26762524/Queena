@@ -17,35 +17,26 @@
 │   │   ├── table-l6.1000.qzv								属水平Qiime2展示文件
 │   │   ├── table-l7.1000.qza								种水平Qiime2数据文件
 │   │   └── table-l7.1000.qzv								种水平Qiime2展示文件
-│   ├── Bacteria.phylogeny.pdf 								全部微生物的系统分析树图
-│   ├── Bacteroidetes.phylogeny.pdf 						Bacteroidetes的系统分析树图
+│   ├── ANCOM
+│ 	│   ├── ANCOM.l2.qzv 									门水平OTU显著性分析Qiime2数据文件
+│ 	│   ├── ANCOM.l3.qzv 									纲水平OTU显著性分析Qiime2数据文件
+│ 	│   ├── ANCOM.l4.qzv 									目水平OTU显著性分析Qiime2数据文件	
+│ 	│   ├── ANCOM.l5.qzv 									科水平OTU显著性分析Qiime2数据文件	
+│ 	│   ├── ANCOM.l6.qzv 									属水平OTU显著性分析Qiime2数据文件	
+│ 	│   ├── ANCOM.l7.qzv 									种水平OTU显著性分析Qiime2数据文件	
+│ 	│   ├── composition.l2.qza 								门水平OTU显著性分析中间文件
+│ 	│   ├── composition.l3.qza 								纲水平OTU显著性分析中间文件
+│ 	│   ├── composition.l4.qza 								目水平OTU显著性分析中间文件
+│ 	│   ├── composition.l5.qza 								科水平OTU显著性分析中间文件
+│ 	│   ├── composition.l6.qza 								属水平OTU显著性分析中间文件
+│ 	│   └── composition.l7.qza 								种水平OTU显著性分析中间文件
+│   ├── table-l7.qzv 										共享OTUQiime2展示文件
 │   ├── Classified_stat_relative.svg 						注释程度
-│   ├── Firmicutes.phylogeny.pdf 							Firmicutes的系统分析树图
-│   ├── Proteobacteria.phylogeny.pdf 						Proteobacteria的系统分析树图
 │   ├── dna-sequences.fasta 								OTU代表序列
 │   ├── feature-table.ConsensusLineage.txt 					OTU文本文件1
 │   ├── feature-table.biom									OTUbiom文件
 │   ├── feature-table.taxonomy.biom 						OTUbiom文件有注释
 │   ├── feature-table.taxonomy.txt 							OTU文本文件2
-│   ├── phylogeny											iTOL文件夹
-│   │   ├── dna-sequences.1000.aligned.masked.qza			iTOL分析绘图中间文件
-│   │   ├── dna-sequences.1000.aligned.qza					iTOL分析绘图中间文件
-│   │   ├── dna-sequences.1000.fasta 						iTOL分析绘图中间文件
-│   │   ├── dna-sequences.1000.qza							iTOL分析绘图中间文件
-│   │   ├── dna-sequences.1000.rooted-tree.qza 				iTOL分析绘图中间文件	
-│   │   ├── dna-sequences.1000.unrooted-tree.qza			iTOL分析绘图中间文件
-│   │   ├── feature-table.biom 								iTOL分析绘图中间文件
-│   │   ├── feature-table.list 								iTOL分析绘图中间文件
-│   │   ├── feature-table.taxonomy.biom 					iTOL分析绘图中间文件
-│   │   ├── feature-table.taxonomy.txt 						iTOL分析绘图中间文件
-│   │   ├── feature-table.txt  								iTOL分析绘图中间文件
-│   │   ├── labels.txt 										iTOL绘图文件
-│   │   ├── labels2.txt 									iTOL绘图文件
-│   │   ├── table.1000.qza 									iTOL分析绘图中间文件
-│   │   ├── taxonomy.1000.qza								iTOL分析绘图中间文件
-│   │   ├── tol_multibar10.txt.txt 							iTOL绘图文件
-│   │   ├── tol_ranges.txt 									iTOL绘图文件
-│   │   └── tree.rooted.nwk 								iTOL绘图文件
 │   ├── table.qzv											OTU基本数据Qiime2展示文件
 │   ├── taxa-bar-plots.qzv									OTU分类Qiime2展示文件
 │   ├── taxonomy.qzv										注释Qiime2展示文件
@@ -106,22 +97,34 @@
 │   ├── wunifrac_NMDS.pdf 									weighted-unifracheatmap图
 │   ├── wunifrac_betadiversity_heatmap.pdf 					weighted-unifracheatmap图
 │   └── wunifrac_matrix.csv 								weighted-unifrac文本文件							
-├── 5-OTUComparision									5-OTUComparision
-│   ├── ANCOM
-│ 	│   ├── ANCOM.l2.qzv 									门水平OTU显著性分析Qiime2数据文件
-│ 	│   ├── ANCOM.l3.qzv 									纲水平OTU显著性分析Qiime2数据文件
-│ 	│   ├── ANCOM.l4.qzv 									目水平OTU显著性分析Qiime2数据文件	
-│ 	│   ├── ANCOM.l5.qzv 									科水平OTU显著性分析Qiime2数据文件	
-│ 	│   ├── ANCOM.l6.qzv 									属水平OTU显著性分析Qiime2数据文件	
-│ 	│   ├── ANCOM.l7.qzv 									种水平OTU显著性分析Qiime2数据文件	
-│ 	│   ├── composition.l2.qza 								门水平OTU显著性分析中间文件
-│ 	│   ├── composition.l3.qza 								纲水平OTU显著性分析中间文件
-│ 	│   ├── composition.l4.qza 								目水平OTU显著性分析中间文件
-│ 	│   ├── composition.l5.qza 								科水平OTU显著性分析中间文件
-│ 	│   ├── composition.l6.qza 								属水平OTU显著性分析中间文件
-│ 	│   ├── composition.l7.qza 								种水平OTU显著性分析中间文件
-│   └── table-l7.qzv 										共享OTUQiime2展示文件
-├── 6-FunctionAnalysis									6-FunctionAnalysis
+├── 5-OTUPhylogenetics									5-OTUPhylogenetics
+│   ├── Bacteria.phylogeny.pdf 								全部微生物的系统分析树图
+│   ├── Bacteroidetes.phylogeny.pdf 						Bacteroidetes的系统分析树图
+│   ├── Firmicutes.phylogeny.pdf 							Firmicutes的系统分析树图
+│   └─ Proteobacteria.phylogeny.pdf 						Proteobacteria的系统分析树图
+├── 6-AssociationAnalysis								6-AssociationAnalysis	
+│   ├── Phylum.rda.pdf 										RDA在门水平结果
+│   ├── permanova.pdf 										PERMANOVA结果
+│   ├── phylogeny											iTOL文件夹
+│   │   ├── dna-sequences.1000.aligned.masked.qza			iTOL分析绘图中间文件
+│   │   ├── dna-sequences.1000.aligned.qza					iTOL分析绘图中间文件
+│   │   ├── dna-sequences.1000.fasta 						iTOL分析绘图中间文件
+│   │   ├── dna-sequences.1000.qza							iTOL分析绘图中间文件
+│   │   ├── dna-sequences.1000.rooted-tree.qza 				iTOL分析绘图中间文件	
+│   │   ├── dna-sequences.1000.unrooted-tree.qza			iTOL分析绘图中间文件
+│   │   ├── feature-table.biom 								iTOL分析绘图中间文件
+│   │   ├── feature-table.list 								iTOL分析绘图中间文件
+│   │   ├── feature-table.taxonomy.biom 					iTOL分析绘图中间文件
+│   │   ├── feature-table.taxonomy.txt 						iTOL分析绘图中间文件
+│   │   ├── feature-table.txt  								iTOL分析绘图中间文件
+│   │   ├── labels.txt 										iTOL绘图文件
+│   │   ├── labels2.txt 									iTOL绘图文件
+│   │   ├── table.1000.qza 									iTOL分析绘图中间文件
+│   │   ├── taxonomy.1000.qza								iTOL分析绘图中间文件
+│   │   ├── tol_multibar10.txt.txt 							iTOL绘图文件
+│   │   ├── tol_ranges.txt 									iTOL绘图文件
+│   │   └── tree.rooted.nwk 								iTOL绘图文件
+├── 7-FunctionAnalysis									7-FunctionAnalysis
 │   ├── PCA_L1												PICRUSt结果一级功能PCA图
 │   ├── PCA_L2												PICRUSt结果一级功能PCA图
 │   ├── PCA_L3 												PICRUSt结果一级功能PCA图				
@@ -150,26 +153,68 @@
 │   ├── tree.feature-table.metagenome.L3.svg 				PICRUSt结果三级功能树图	
 │   ├── unmatched_sequences.qza  							功能分析中间文件
 │   └── unmatched_sequences.qzv 							功能分析中间文件
-├── 7-AssociationAnalysis								7-AssociationAnalysis	
-│   ├── Phylum.rda.pdf 										RDA在门水平结果
-│   └── permanova.pdf 										PERMANOVA结果
 ├── FigureandTable 										FigureandTable表格及图表文件夹
 │   ├── Figure3-1.svg -> ../2-OTUAnalysis/Classified_stat_relative.svg
 │   ├── Figure3-10.pdf -> ../4-BetaDiversity/unifrac_NMDS.pdf
 │   ├── Figure3-11.qzv -> ../4-BetaDiversity/unweighted-unifrac-permanova-Group1-significance.qzv
-│   ├── Figure3-12.qzv -> ../5-OTUComparision/ANCOM/ANCOM.l7.qzv
-│   ├── Figure3-14.svg -> ../6-FunctionAnalysis/percent.feature-table.metagenome.L1.svg
-│   ├── Figure3-15.pdf -> ../6-FunctionAnalysis/PCA_L1/PCA-2D.pdf
-│   ├── Figure3-16.svg -> ../6-FunctionAnalysis/tree.feature-table.metagenome.L1.svg
+│   ├── Figure3-12.pdf -> ../5-OTUPhylogenetics/Bacteria.phylogeny.pdf
+│   ├── Figure3-14.pdf -> ../6-AssociationAnalysis/Phylum.rda.pdf
+│   ├── Figure3-15.pdf -> ../6-AssociationAnalysis/permanova.pdf
+│   ├── Figure3-18.svg -> ../7-FunctionAnalysis/percent.feature-table.metagenome.L1.svg
+│   ├── Figure3-19.pdf -> ../7-FunctionAnalysis/PCA_L1/PCA-2D.pdf
+│   ├── Figure3-20.svg -> ../7-FunctionAnalysis/tree.feature-table.metagenome.L1.svg
 │   ├── Figure3-2.qzv -> ../2-OTUAnalysis/taxa-bar-plots.qzv
 │   ├── Figure3-3.qzv -> ../2-OTUAnalysis/1000/table-l2.1000.qzv
+│   ├── Figure3-4.qzv -> ../2-OTUAnalysis/ANCOM/ANCOM.l7.qzv
 │   ├── Figure3-6.qzv -> ../3-AlphaDiversity/shannon-group-significance.qzv
 │   ├── Figure3-7.qzv -> ../3-AlphaDiversity/faith-pd-group-significance.qzv
 │   ├── Figure3-8.svg -> ../4-BetaDiversity/BetaDiversity_heatmap.svg
 │   ├── Figure3-9.qzv -> ../4-BetaDiversity/unweighted_unifrac_emperor.qzv
-│   ├── Table3-2.tsv -> ../3-AlphaDiversity/alpha/alpha-summary.tsv
-│   ├── Table3-3.qzv -> ../3-AlphaDiversity/faith-pd-group-significance.qzv
-│   ├── Table3-4.qzv -> ../4-BetaDiversity/unweighted-unifrac-permanova-Group1-significance.qzv
-│   ├── Table3-5.qzv -> ../5-OTUComparision/ANCOM/ANCOM.l7.qzv
-│   └── Table3-6.qzv -> ../5-OTUComparision/table-l7.qzv
-└── Result_README.txt                               				说明文件
+│   ├── Table3-1.qzv -> ../2-OTUAnalysis/ANCOM/ANCOM.l7.qzv
+│   ├── Table3-2.qzv -> ../2-OTUAnalysis/table-l7.qzv 
+│   ├── Table3-3.tsv -> ../3-AlphaDiversity/alpha/alpha-summary.tsv
+│   ├── Table3-4.qzv -> ../3-AlphaDiversity/shannon-group-significance.qzv 
+│   ├── Table3-5.qzv -> ../4-BetaDiversity/unweighted-unifrac-permanova-${group_1}-significance.qzv
+├── Essential												主要信息查阅文件夹
+│   ├── AlphaDiversity 										Alpha指数相关文件夹				
+│   │   └── alpha-summary.tsv
+│   ├── BetaDiversity 										Beta指数相关文件夹
+│   │   ├── bray_matrix.txt
+│   │   ├── unifrac_matrix.txt
+│   │   └── wunifrac_matrix.txt
+│   ├── DiffOTU 											差异性OTU数据相关文件夹
+│   │   │   ├── genus										属水平OTU
+│   │   │   ├── ancom.csv
+│   │   │   ├── index.html
+│   │   │   └── percent-abundances.csv
+│   │   └── Phylum 											门水平OTU			
+│   │       ├── ancom.csv
+│   │       ├── index.html
+│   │       └── percent-abundances.csv
+│   ├── OTU 												OTU表格基本信息文件夹
+│   │   ├── index.html
+│   │   ├── level-1.csv
+│   │   ├── level-1.jsonp
+│   │   ├── level-2.csv
+│   │   ├── level-2.jsonp
+│   │   ├── level-3.csv
+│   │   ├── level-3.jsonp
+│   │   ├── level-4.csv
+│   │   ├── level-4.jsonp
+│   │   ├── level-5.csv
+│   │   ├── level-5.jsonp
+│   │   ├── level-6.csv
+│   │   ├── level-6.jsonp
+│   │   ├── level-7.csv
+│   │   ├── level-7.jsonp
+│   └── demux 											  	拆分数据基本信息文件夹
+│       ├── data.jsonp
+│       ├── demultiplex-summary.pdf
+│       ├── demultiplex-summary.png
+│       ├── dist
+│       ├── index.html
+│       ├── overview.html
+│       ├── per-sample-fastq-counts.csv
+│       ├── q2templateassets
+│       └── quality-plot.html
+└── Result_README.txt                               		说明文件
