@@ -176,12 +176,16 @@
 │   ├── Table3-4.qzv -> ../3-AlphaDiversity/shannon-group-significance.qzv 
 │   ├── Table3-5.qzv -> ../4-BetaDiversity/unweighted-unifrac-permanova-${group_1}-significance.qzv
 ├── Essential												主要信息查阅文件夹
-│   ├── AlphaDiversity 										Alpha指数相关文件夹				
+│   ├── AlphaDiversity 										Alpha指数相关文件夹
+│   │   ├── rarefaction.png				
 │   │   └── alpha-summary.tsv
 │   ├── BetaDiversity 										Beta指数相关文件夹
 │   │   ├── bray_matrix.txt
 │   │   ├── unifrac_matrix.txt
-│   │   └── wunifrac_matrix.txt
+│   │   ├── wunifrac_matrix.txt
+│   │   ├── bray_NMDS.pdf
+│   │   ├── bray_PCoA.png
+│   │   ├── bray_curtis_emperor.qzv
 │   ├── DiffOTU 											差异性OTU数据相关文件夹
 │   │   │   ├── genus										属水平OTU
 │   │   │   ├── ancom.csv
@@ -192,6 +196,9 @@
 │   │       ├── index.html
 │   │       └── percent-abundances.csv
 │   ├── OTU 												OTU表格基本信息文件夹
+│   │   ├── barplot_genus.png
+│   │   ├── barplot_phylum.png
+│   │   ├── feature-table.taxonomy.txt
 │   │   ├── index.html
 │   │   ├── level-1.csv
 │   │   ├── level-1.jsonp

@@ -3,6 +3,7 @@ library("ape")
 library("phyloseq")
 library("ggplot2")
 library("gplots")
+library("vegan")
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -19,6 +20,8 @@ category1 = args[2]
 #category1 = "Group1"
 #map = "/Users/chengguo/Desktop/Hengchuang/M231/M231_Mapping_2.tsv"
 
+category1 = "Group1"
+map = "~/Desktop/WST/16S-pipeline/sample-metadata.tsv"
 
 this.dir <- dirname(parent.frame(2)$map)
 new.dir <- paste(this.dir, "/R_output", sep="")
@@ -34,6 +37,8 @@ print(txt)
 print(tre)
 print(rs)
 
+
+########################Using Phyloseq
 qiimedata = import_qiime(txt, map, tre, rs)
 
 gpt <- subset_taxa(qiimedata, Kingdom=="Bacteria")
@@ -79,4 +84,45 @@ for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
   beta_outputtxtname <- paste(distance_matrix, "_matrix.txt", sep="")
   write.table(as.matrix(Dist), beta_outputtxtname , quote=FALSE, col.names=NA, sep="\t")
 }
+
+
+
+
+
+
+####################Using mixOmics for PLS-DA plot
+plsdatxt = paste(this.dir, "/R_output/feature-table.PLSDA.txt", sep="")
+plsdameta = paste(this.dir, "/R_output/sample-metadata.PLSDA.txt", sep="")
+print(plsdatxt)
+print(plsdameta)
+
+
+library(knitr)
+knitr::opts_chunk$set(dpi = 100, echo= TRUE, warning=FALSE, message=FALSE, fig.align = 'center', 
+                      fig.show=TRUE, fig.keep = 'all', out.width = '50%') 
+
+## ----message = FALSE-----------------------------------------------------
+library(mixOmics)
+
+## ------------------------------------------------------------------------
+#srbct <- load("/Users/chengguo/Downloads/PLSDA_SRBCT/result-SRBCT-sPLSDA.RData")
+X = read.table(plsdatxt, head=TRUE)
+#head(X)
+tX<-t(X)
+#head(tX)
+A = read.table(plsdameta, head=FALSE)
+Y = A$V4
+summary(Y)
+dim(X)
+
+pca.srbct = pca(tX, ncomp = 10, center = TRUE, scale = TRUE)
+#pca.srbct #outputs the explained variance per component
+plot(pca.srbct)  # screeplot of the eingenvalues (explained variance per component)
+pdf("PCA_plot.pdf")
+plotIndiv(pca.srbct, group = Y, ind.names = FALSE, legend = TRUE, title = 'PCA plot')
+dev.off()
+srbct.plsda <- plsda(tX, Y, ncomp = 10)  # set ncomp to 10 for performance assessment later
+pdf("PLSDA_plot.pdf")
+plotIndiv(srbct.plsda , comp = 1:2, group = Y, ind.names = FALSE,  ellipse = TRUE, legend = TRUE, title = 'PLSDA plot')
+dev.off()
 
