@@ -4,7 +4,6 @@ library("phyloseq")
 library("ggplot2")
 library("gplots")
 library("vegan")
-library(ggrepel)
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -21,8 +20,8 @@ category1 = args[2]
 #category1 = "Group1"
 #map = "/Users/chengguo/Desktop/Hengchuang/M231/M231_Mapping_2.tsv"
 
-#category1 = "Group1"
-#map = "~/Desktop/WST/16S-pipeline/sample-metadata.tsv"
+category1 = "Group1"
+map = "~/Desktop/Hengchuang/Demo/sample-metadata.tsv"
 
 this.dir <- dirname(parent.frame(2)$map)
 new.dir <- paste(this.dir, "/R_output", sep="")
@@ -70,7 +69,7 @@ for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
   NMDS_outputpdfname <- paste(distance_matrix, "_NMDS.pdf", sep="")
   pdf(NMDS_outputpdfname, width=10, height=12)
   p2 = plot_ordination(gpt, GP.ord, type="samples", color=category1) 
-  p3 = p2  + geom_point(size=5) + geom_text_repel(aes(label=Description),hjust=0, vjust=2, size=4) + stat_ellipse()
+  p3 = p2  + geom_point(size=5) + geom_text(aes(label=Description),hjust=0, vjust=2)
   print(p3 + ggtitle(distance_matrix))
   dev.off()
 }
@@ -92,10 +91,12 @@ for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
 
 
 ####################Using mixOmics for PLS-DA plot
-plsdatxt = paste(this.dir, "/R_output/feature-table.PLSDA.txt", sep="")
-plsdameta = paste(this.dir, "/R_output/sample-metadata.PLSDA.txt", sep="")
-print(plsdatxt)
-print(plsdameta)
+plsda-txt = paste(this.dir, "/exported/feature-table.PLSDA.txt", sep="")
+plsda-meta = paste(this.dir, "/exported/sample-metadata.PLSDA.txt", sep="")
+print(plsda-txt)
+print(plsda-meta)
+
+
 library(knitr)
 knitr::opts_chunk$set(dpi = 100, echo= TRUE, warning=FALSE, message=FALSE, fig.align = 'center', 
                       fig.show=TRUE, fig.keep = 'all', out.width = '50%') 
@@ -105,52 +106,19 @@ library(mixOmics)
 
 ## ------------------------------------------------------------------------
 #srbct <- load("/Users/chengguo/Downloads/PLSDA_SRBCT/result-SRBCT-sPLSDA.RData")
-X = read.table(plsdatxt, head=TRUE)
-#head(X)
-tX<-t(X)
-#head(tX)
-A = read.table(plsdameta, head=FALSE)
+X = read.table(plsda-txt, head=TRUE)
+head(X)
+X<-t(X)
+A = read.table(plsda-meta, head=FALSE)
 Y = A$V4
 summary(Y)
-dim(X)
-
-pca.srbct = pca(tX, ncomp = 10, center = TRUE, scale = TRUE)
+pca.srbct = pca(X, ncomp = 10, center = TRUE, scale = TRUE)
 #pca.srbct #outputs the explained variance per component
 plot(pca.srbct)  # screeplot of the eingenvalues (explained variance per component)
-pdf("PCA_plot.pdf")
-plotIndiv(pca.srbct, group = Y, ind.names = FALSE, legend = TRUE, ellipse = TRUE, title = 'PCA plot')
-dev.off()
+plotIndiv(pca.srbct, group = Y, ind.names = FALSE, 
+          legend = TRUE, title = 'PCA on SRBCT')
+srbct.plsda <- plsda(X, Y, ncomp = 10)  # set ncomp to 10 for performance assessment later
+plotIndiv(srbct.plsda , comp = 1:2,
+          group = Y, ind.names = FALSE, 
+          ellipse = TRUE, legend = TRUE, title = 'PLSDA plots')
 
-srbct.plsda <- plsda(tX, Y)  # set ncomp to 10 for performance assessment later
-plsda.vip <- vip(srbct.plsda)
-write.csv(plsda.vip,"PLSDA_Variable_importance_in_projection.txt")
-
-pdf("PLSDA_AUC_plot.pdf", width = 5, height = 4)
-auroc(srbct.plsda, roc.comp = 2)
-dev.off()
-
-pdf("PLSDA_comp_plot.pdf")
-plotIndiv(srbct.plsda , comp = 1:2, group = Y, ellipse.level = 0.75,size.xlabel = 15, size.ylabel = 15,size.axis = 15,size.legend = 15,size.legend.title = 15,ind.names = FALSE, title = "Supervised PLS-DA on OTUs",abline = T,legend = TRUE,ellipse = T)
-dev.off()
-
-
-
-##################Use ggplot to draw alpha diversity boxplot.
-library("ggplot2") # load related packages
-#read files.
-alphadatxt = paste(this.dir, "/alpha/alpha-summary.tsv", sep="")
-alphameta = paste(this.dir, "/alpha/sample-metadata_alphadiversity.txt", sep="")
-design = read.table(alphameta, header=T, row.names= 1, sep="\t") 
-alpha = read.table(alphadatxt, header=T, row.names= 1, sep="\t")
-
-# merge information for script
-index = cbind(alpha, design[match(rownames(alpha), rownames(design)), ]) 
-# run shannon, observed_otus, faith_pd separately as the aes function is not accepting variables!!!
-p = ggplot(index, aes(x=Group1, y=observed_otus, color=Group1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="observed_otus index")
-ggsave(paste("alpha_diversity_observed_otus.boxplot.pdf", sep=""), p, width = 5, height = 3)
-
-p = ggplot(index, aes(x=Group1, y=shannon, color=Group1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="shannon index")
-ggsave(paste("alpha_diversity_shannon.boxplot.pdf", sep=""), p, width = 5, height = 3)
-
-p = ggplot(index, aes(x=Group1, y=faith_pd, color=Group1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="faith_pd index")
-ggsave(paste("alpha_diversity_faith_pd.boxplot.pdf", sep=""), p, width = 5, height = 3)

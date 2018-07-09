@@ -112,8 +112,9 @@ MAIN() {
 	READMEORIGINALPATH=${SCRIPTPATH}/Result_README.txt
 	ITOLPERLPATH=${SCRIPTPATH}/generate_file_Itol.pl
 
+<<COMMENT1
 	echo "#Demultiplexing the single-end sequence file"
-	qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza
+	qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza --p-rev-comp-mapping-barcodes
 	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
 
 	#echo "#Demultiplexing the paired-end sequence file"
@@ -121,7 +122,6 @@ MAIN() {
 	#qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
 
 
-<<COMMENT1
 	echo "#Set up the directory structure and prepare the raw fastq sequences."
 	check_file $manifest_file
 	#qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred64
@@ -130,7 +130,7 @@ MAIN() {
 	#paired-end
 	qiime tools import   --type 'SampleData[PairedEndSequencesWithQuality]'  --input-path $manifest_file --output-path demux.qza --source-format PairedEndFastqManifestPhred33
 	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
-COMMENT1
+
 
 	echo "#Use DADA2 for quality control and feature table construction"
 	#single-end
@@ -158,6 +158,7 @@ COMMENT1
 	qiime metadata tabulate   --m-input-file taxonomy.qza   --o-visualization taxonomy.qzv
 
 
+
 	qiime taxa barplot   --i-table table.qza   --i-taxonomy taxonomy.qza   --m-metadata-file $mapping_file  --o-visualization taxa-bar-plots.qzv
 
 	echo "#Visulize of the table without Choloroplast and Mitochondira"
@@ -169,7 +170,7 @@ COMMENT1
 	qiime alignment mask   --i-alignment aligned-rep-seqs.qza   --o-masked-alignment masked-aligned-rep-seqs.qza
 	qiime phylogeny fasttree   --i-alignment masked-aligned-rep-seqs.qza   --o-tree unrooted-tree.qza
 	qiime phylogeny midpoint-root   --i-tree unrooted-tree.qza   --o-rooted-tree rooted-tree.qza
-
+COMMENT1
 
 
 	echo "#Core alpha and beta diversity analysis"
@@ -177,18 +178,18 @@ COMMENT1
 	qiime diversity alpha-group-significance   --i-alpha-diversity core-metrics-results/faith_pd_vector.qza   --m-metadata-file $mapping_file  --o-visualization core-metrics-results/faith-pd-group-significance.qzv
 	qiime diversity alpha-group-significance   --i-alpha-diversity core-metrics-results/evenness_vector.qza   --m-metadata-file $mapping_file  --o-visualization core-metrics-results/evenness-group-significance.qzv
 	qiime diversity alpha-group-significance   --i-alpha-diversity core-metrics-results/shannon_vector.qza   --m-metadata-file $mapping_file  --o-visualization core-metrics-results/shannon-group-significance.qzv
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-category $category_1   --o-visualization 'core-metrics-results/unweighted-unifrac-permanova-'$category_1'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-category $category_2   --o-visualization 'core-metrics-results/unweighted-unifrac-permanova-'$category_2'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-category $category_1   --o-visualization 'core-metrics-results/weighted-unifrac-permanova-'$category_1'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-category $category_2   --o-visualization 'core-metrics-results/weighted-unifrac-permanova-'$category_2'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-category $category_1   --o-visualization 'core-metrics-results/bray_curtis-permanova-'$category_1'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-category $category_2   --o-visualization 'core-metrics-results/bray_curtis-permanova-'$category_2'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-category $category_1   --o-visualization 'core-metrics-results/unweighted-unifrac-anosim-'$category_1'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-category $category_2   --o-visualization 'core-metrics-results/unweighted-unifrac-anosim-'$category_2'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-category $category_1   --o-visualization 'core-metrics-results/weighted-unifrac-anosim-'$category_1'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-category $category_2   --o-visualization 'core-metrics-results/weighted-unifrac-anosim-'$category_2'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-category $category_1   --o-visualization 'core-metrics-results/bray_curtis-anosim-'$category_1'-significance.qzv'  --p-pairwise
-	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-category $category_2   --o-visualization 'core-metrics-results/bray_curtis-anosim-'$category_2'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-column $category_1   --o-visualization 'core-metrics-results/unweighted-unifrac-permanova-'$category_1'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-column $category_2   --o-visualization 'core-metrics-results/unweighted-unifrac-permanova-'$category_2'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-column $category_1   --o-visualization 'core-metrics-results/weighted-unifrac-permanova-'$category_1'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-column $category_2   --o-visualization 'core-metrics-results/weighted-unifrac-permanova-'$category_2'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-column $category_1   --o-visualization 'core-metrics-results/bray_curtis-permanova-'$category_1'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method permanova --m-metadata-column $category_2   --o-visualization 'core-metrics-results/bray_curtis-permanova-'$category_2'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_1   --o-visualization 'core-metrics-results/unweighted-unifrac-anosim-'$category_1'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_2   --o-visualization 'core-metrics-results/unweighted-unifrac-anosim-'$category_2'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_1   --o-visualization 'core-metrics-results/weighted-unifrac-anosim-'$category_1'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_2   --o-visualization 'core-metrics-results/weighted-unifrac-anosim-'$category_2'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_1   --o-visualization 'core-metrics-results/bray_curtis-anosim-'$category_1'-significance.qzv'  --p-pairwise
+	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_2   --o-visualization 'core-metrics-results/bray_curtis-anosim-'$category_2'-significance.qzv'  --p-pairwise
 	qiime diversity alpha-rarefaction   --i-table table.qza   --i-phylogeny rooted-tree.qza   --p-max-depth $depth  --m-metadata-file $mapping_file  --o-visualization alpha-rarefaction.qzv
 	##These following two commands work only for column with numeric values:
 	##qiime emperor plot   --i-pcoa core-metrics-results/unweighted_unifrac_pcoa_results.qza   --m-metadata-file $mapping_file --p-custom-axis $category_2   --o-visualization 'core-metrics-results/unweighted-unifrac-emperor-'$category_2'.qzv'
@@ -225,7 +226,7 @@ COMMENT1
 		do echo $n;
 		qiime taxa collapse   --i-table table.qza   --i-taxonomy taxonomy.qza   --p-level $n   --o-collapsed-table exported/collapsed/table-l${n}.qza;
 		qiime feature-table filter-features   --i-table exported/collapsed/table-l${n}.qza   --p-min-frequency $min_freq  --o-filtered-table exported/${min_freq}/table-l${n}.${min_freq}.qza; 
-		qiime feature-table heatmap --i-table exported/${min_freq}/table-l${n}.${min_freq}.qza --m-metadata-file $mapping_file --m-metadata-category $category_1 --o-visualization exported/${min_freq}/table-l${n}.${min_freq}.qzv;
+		qiime feature-table heatmap --i-table exported/${min_freq}/table-l${n}.${min_freq}.qza --m-metadata-file $mapping_file --m-metadata-column $category_1 --o-visualization exported/${min_freq}/table-l${n}.${min_freq}.qzv;
 	done;
 
 
@@ -243,8 +244,8 @@ COMMENT1
 	for n2 in 2 3 4 5 6 7;
 		do echo $n2;
 		qiime composition add-pseudocount   --i-table exported/collapsed/table-l${n2}.qza --o-composition-table exported/ANCOM/composition.l${n2}.qza;
-		qiime composition ancom  --i-table exported/ANCOM/composition.l${n2}.qza --m-metadata-file $mapping_file --m-metadata-category $category_1 --o-visualization exported/ANCOM/ANCOM.l${n2}.qzv;
-		qiime composition ancom  --i-table exported/ANCOM/composition.l${n2}.qza --m-metadata-file $mapping_file --m-metadata-category $category_2 --o-visualization exported/ANCOM/SecondaryGroup/ANCOM.l${n2}.qzv;
+		qiime composition ancom  --i-table exported/ANCOM/composition.l${n2}.qza --m-metadata-file $mapping_file --m-metadata-column $category_1 --o-visualization exported/ANCOM/ANCOM.l${n2}.qzv;
+		qiime composition ancom  --i-table exported/ANCOM/composition.l${n2}.qza --m-metadata-file $mapping_file --m-metadata-column $category_2 --o-visualization exported/ANCOM/SecondaryGroup/ANCOM.l${n2}.qzv;
 	done;
 
 

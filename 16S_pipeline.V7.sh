@@ -61,42 +61,47 @@ organize_deliverable_structure() {
 	echo "Start organize the files for deliverables ..."
 	
 	mkdir Result
-	mkdir Result/1-Demux Result/2-OTUAnalysis Result/3-AlphaDiversity Result/4-BetaDiversity Result/5-OTUComparision Result/6-FunctionAnalysis Result/7-AssociationAnalysis Result/FigureandTable
+	mkdir Result/1-Demux Result/2-OTUAnalysis Result/3-AlphaDiversity Result/4-BetaDiversity Result/5-OTUPhylogenetics Result/6-AssociationAnalysis Result/7-FunctionAnalysis Result/FigureandTable
+	cp -r Essential Result
 	cp $READMEORIGINALPATH ./Result/
 	cp $mapping_file ./Result/
 	#cp -r raw demux.qzv demux.qza Result/1-Demux
 	cp -r demux.qzv Result/1-Demux
-	cp -r taxa-bar-plots.qzv taxonomy.qzv table.qzv rep-seqs.qzv phylogeny exported/feature-table* exported/dna-sequences.fasta exported/tree* exported/1000 exported/Relative exported/Relative/Classified_stat_relative.svg R_output/*phylogeny* Result/2-OTUAnalysis
+	cp -r taxa-bar-plots.qzv taxonomy.qzv table.qzv rep-seqs.qzv phylogeny exported/feature-table* exported/dna-sequences.fasta exported/tree* exported/1000 exported/kruskal_wallis* exported/Relative exported/Relative/Classified_stat_relative.svg exported/ANCOM exported/collapsed/table-l7.qzv Result/2-OTUAnalysis
 	cp -r alpha alpha-rarefaction.qzv core-metrics-results/*evenness* core-metrics-results/*faith* core-metrics-results/*observed* core-metrics-results/*shannon* Result/3-AlphaDiversity
-	cp -r core-metrics-results/*bray_curtis* core-metrics-results/*unifrac* R_output/*matrix* R_output/*NMDS* R_output/*heatmap* Result/4-BetaDiversity 
-	cp -r exported/ANCOM exported/collapsed/table-l7.qzv Result/5-OTUComparision
-	cp -r closedRef_forPICRUSt/* Result/6-FunctionAnalysis
-	cp -r exported/Absolute/*pdf Result/7-AssociationAnalysis
+	cp -r core-metrics-results/*bray_curtis* core-metrics-results/*unifrac* R_output/*matrix* R_output/*NMDS* R_output/*heatmap* R_output/PLSDA_plot.pdf Result/4-BetaDiversity 
+	cp -r R_output/*phylogeny*  phylogeny Result/5-OTUPhylogenetics
+	cp -r exported/Absolute/*pdf Result/6-AssociationAnalysis
+	cp -r closedRef_forPICRUSt/* Result/7-FunctionAnalysis
 
 	cd Result/FigureandTable
-	ln -s ../3-AlphaDiversity/alpha/alpha-summary.tsv Table3-2.tsv
-	ln -s ../3-AlphaDiversity/shannon-group-significance.qzv Table3-3.qzv
-	ln -s ../4-BetaDiversity/unweighted-unifrac-permanova-${group_1}-significance.qzv Table3-4.qzv
-	ln -s ../5-OTUComparision/ANCOM/ANCOM.l7.qzv Table3-5.qzv
-	ln -s ../5-OTUComparision/table-l7.qzv Table3-6.qzv
-	
+
+	ln -s ../2-OTUAnalysis/ANCOM/ANCOM.l7.qzv Table3-1.qzv
+	ln -s ../2-OTUAnalysis/table-l7.qzv  Table3-2.qzv
+	ln -s ../3-AlphaDiversity/alpha/alpha-summary.tsv Table3-3.tsv
+	ln -s ../3-AlphaDiversity/shannon-group-significance.qzv Table3-4.qzv
+	ln -s ../4-BetaDiversity/unweighted-unifrac-permanova-${group_1}-significance.qzv Table3-5.qzv
+		
 	ln -s ../2-OTUAnalysis/Classified_stat_relative.svg Figure3-1.svg
 	ln -s ../2-OTUAnalysis/taxa-bar-plots.qzv Figure3-2.qzv
 	ln -s ../2-OTUAnalysis/1000/table-l2.1000.qzv Figure3-3.qzv
-	ln -s ../2-OTUAnalysis/Bacteria.phylogeny.pdf Figure3-4.pdf
+	ln -s ../2-OTUAnalysis/ANCOM/ANCOM.l7.qzv Figure3-4.qzv
 	ln -s ../3-AlphaDiversity/alpha-rarefaction.qzv Figure3-6.qzv
 	ln -s ../3-AlphaDiversity/shannon-group-significance.qzv Figure3-7.qzv
 	ln -s ../4-BetaDiversity/BetaDiversity_heatmap.svg Figure3-8.svg
 	ln -s ../4-BetaDiversity/unweighted_unifrac_emperor.qzv Figure3-9.qzv
 	ln -s ../4-BetaDiversity/unifrac_NMDS.pdf Figure3-10.pdf
 	ln -s ../4-BetaDiversity/unweighted-unifrac-permanova-${group_1}-significance.qzv Figure3-11.qzv
-	ln -s ../5-OTUComparision/ANCOM/ANCOM.l7.qzv Figure3-12.qzv
-	ln -s ../6-FunctionAnalysis/percent.feature-table.metagenome.L1.svg Figure3-14.svg
-	ln -s ../6-FunctionAnalysis/PCA_L1/PCA-2D.pdf Figure3-15.pdf
-	ln -s ../6-FunctionAnalysis/tree.feature-table.metagenome.L1.svg Figure3-16.svg
-	ln -s ../7-AssociationAnalysis/Phylum.rda.pdf Figure3-17.pdf
-	ln -s ../7-AssociationAnalysis/permanova.pdf Figure3-18.pdf
+	ln -s ../5-OTUPhylogenetics/Bacteria.phylogeny.pdf Figure3-12.pdf
+	ln -s ../6-AssociationAnalysis/Phylum.rda.pdf Figure3-14.pdf
+	ln -s ../6-AssociationAnalysis/permanova.pdf Figure3-15.pdf
+	ln -s ../7-FunctionAnalysis/percent.feature-table.metagenome.L1.svg Figure3-18.svg
+	ln -s ../7-FunctionAnalysis/PCA_L1/PCA-2D.pdf Figure3-19.pdf
+	ln -s ../7-FunctionAnalysis/tree.feature-table.metagenome.L1.svg Figure3-20.svg
 
+	cd ..
+	mkdir Detailed
+	mv 1-Demux 2-OTUAnalysis 3-AlphaDiversity 4-BetaDiversity 5-OTUPhylogenetics 6-AssociationAnalysis 7-FunctionAnalysis FigureandTable Detailed
 }
 
 MAIN() {
@@ -105,73 +110,66 @@ MAIN() {
 	source activate qiime2-2018.2
 
 
-	echo "Initiate directory name and set up the directory structure"
+	echo "##############################################################\n#Initiate directory name and set up the directory structure"
 	SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 	RSCRIPTORIGINALPATH=${SCRIPTPATH}/RRelatedOutput.R
 	cp $RSCRIPTORIGINALPATH ./
-	READMEORIGINALPATH=${SCRIPTPATH}/Result_README.txt
+	READMEORIGINALPATH=${SCRIPTPATH}/Result_README.pdf
 	ITOLPERLPATH=${SCRIPTPATH}/generate_file_Itol.pl
 
-	#echo "#Demultiplexing the single-end sequence file"
+	#echo "##############################################################\n#Demultiplexing the single-end sequence file"
 	#qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza
 	#qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
 
-<<COMMENTS1
-	echo "#Demultiplexing the paired-end sequence file"
-	qiime demux emp-paired --i-seqs emp-paired-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza --p-rev-comp-mapping-barcodes
-	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
+	#echo "##############################################################\n#Demultiplexing the paired-end sequence file"
+	#qiime demux emp-paired --i-seqs emp-paired-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza
+	#qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
 
-
-	echo "#Set up the directory structure and prepare the raw fastq sequences."
+<<COMMENT1
+	echo "##############################################################\n#Set up the directory structure and prepare the raw fastq sequences."
 	check_file $manifest_file
 	#qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred64
 	#single-end
+	qiime demux emp-single --i-seqs emp-single-end-sequences.qza --m-barcodes-file $mapping_file --m-barcodes-column BarcodeSequence  --o-per-sample-sequences demux.qza --p-rev-comp-mapping-barcodes
 	#qiime tools import   --type 'SampleData[SequencesWithQuality]'   --input-path $manifest_file --output-path demux.qza --source-format SingleEndFastqManifestPhred33
 	#paired-end
-	qiime tools import   --type 'SampleData[PairedEndSequencesWithQuality]'  --input-path $manifest_file --output-path demux.qza --source-format PairedEndFastqManifestPhred33
+	#qiime tools import   --type 'SampleData[PairedEndSequencesWithQuality]'  --input-path $manifest_file --output-path demux.qza --source-format PairedEndFastqManifestPhred33
 	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
-COMMENTS1
 
-	echo "#Use DADA2 for quality control and feature table construction"
-	##single-end for 3F
-	#qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 250 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
-	##single-end for 86F
-	#qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 215 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
-	
-	##paired-end for 3F
-	#qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 250 --p-trunc-len-r 210 --p-trim-left-f 10 --p-trim-left-r 10 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
-	##paired-end for 3F
-	qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 215 --p-trunc-len-r 160 --p-trim-left-f 10 --p-trim-left-r 10 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+
+	echo "##############################################################\n#Use DADA2 for quality control and feature table construction"
+	#single-end
+	#qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 265 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+	qiime dada2 denoise-single --i-demultiplexed-seqs demux.qza --p-trim-left 10 --p-trunc-len 275 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+
+	#paired-end
+	#qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 210 --p-trunc-len-r 210 --p-trim-left-f 24 --p-trim-left-r 25 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
 
 	mv rep-seqs-dada2.qza rep-seqs.withCandM.qza
 	mv table-dada2.qza table.withCandM.qza
 
-
-	echo "#Filter out Choloroplast and Mitochondira"
+	echo "##############################################################\n#Filter out Choloroplast and Mitochondira"
 	check_file $reference_trained
 	qiime feature-classifier classify-sklearn   --i-classifier $reference_trained  --i-reads rep-seqs.withCandM.qza  --o-classification taxonomy.withCandM.qza
 
-	#THE UNITE Database is not good with Unassigned.
-	#qiime taxa filter-table   --i-table table.withCandM.qza  --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast,Archaea,Unassigned  --o-filtered-table table-no-mitochondria-no-chloroplast.qza
-	qiime taxa filter-table   --i-table table.withCandM.qza  --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast,Archaea  --o-filtered-table table-no-mitochondria-no-chloroplast.qza
+
+	qiime taxa filter-table   --i-table table.withCandM.qza  --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast,Archaea,Unassigned  --o-filtered-table table-no-mitochondria-no-chloroplast.qza
 	mv table-no-mitochondria-no-chloroplast.qza table.qza
-	qiime taxa filter-seqs   --i-sequences rep-seqs.withCandM.qza   --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast,Archaea  --o-filtered-sequences rep-seqs-no-mitochondria-no-chloroplast.qza
+	qiime taxa filter-seqs   --i-sequences rep-seqs.withCandM.qza   --i-taxonomy taxonomy.withCandM.qza  --p-exclude mitochondria,chloroplast   --o-filtered-sequences rep-seqs-no-mitochondria-no-chloroplast.qza
 	mv rep-seqs-no-mitochondria-no-chloroplast.qza rep-seqs.qza
 
 
-	echo "#Classify the taxonomy"
+	echo "##############################################################\n#Classify the taxonomy"
 	qiime feature-classifier classify-sklearn   --i-classifier $reference_trained  --i-reads rep-seqs.qza  --o-classification taxonomy.qza
-
 	qiime metadata tabulate   --m-input-file taxonomy.qza   --o-visualization taxonomy.qzv
 
 
-	qiime taxa barplot   --i-table table.qza   --i-taxonomy taxonomy.qza   --m-metadata-file $mapping_file  --o-visualization taxa-bar-plots.qzv
-
-	echo "#Visulize of the table without Choloroplast and Mitochondira"
+	echo "##############################################################\n#Visulize of the table without Choloroplast and Mitochondira"
 	qiime feature-table summarize --i-table table.qza --o-visualization table.qzv --m-sample-metadata-file $mapping_file
-	qiime feature-table tabulate-seqs   --i-data rep-seqs.qza   --o-visualization rep-seqs.qzv
+	qiime feature-table tabulate-seqs   --i-data rep-seqs.qza   --o-visualization rep-seqs.qzv	qiime taxa barplot   --i-table table.qza   --i-taxonomy taxonomy.qza   --m-metadata-file $mapping_file  --o-visualization taxa-bar-plots.qzv
 
-	echo "#Generate tree"
+
+	echo "##############################################################\n#Generate tree"
 	qiime alignment mafft   --i-sequences rep-seqs.qza   --o-alignment aligned-rep-seqs.qza
 	qiime alignment mask   --i-alignment aligned-rep-seqs.qza   --o-masked-alignment masked-aligned-rep-seqs.qza
 	qiime phylogeny fasttree   --i-alignment masked-aligned-rep-seqs.qza   --o-tree unrooted-tree.qza
@@ -179,7 +177,7 @@ COMMENTS1
 
 
 
-	echo "#Core alpha and beta diversity analysis"
+	echo "##############################################################\n#Core alpha and beta diversity analysis"
 	qiime diversity core-metrics-phylogenetic   --i-phylogeny rooted-tree.qza   --i-table table.qza   --p-sampling-depth $depth   --m-metadata-file $mapping_file  --output-dir core-metrics-results
 	qiime diversity alpha-group-significance   --i-alpha-diversity core-metrics-results/faith_pd_vector.qza   --m-metadata-file $mapping_file  --o-visualization core-metrics-results/faith-pd-group-significance.qzv
 	qiime diversity alpha-group-significance   --i-alpha-diversity core-metrics-results/evenness_vector.qza   --m-metadata-file $mapping_file  --o-visualization core-metrics-results/evenness-group-significance.qzv
@@ -196,13 +194,13 @@ COMMENTS1
 	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_2   --o-visualization 'core-metrics-results/weighted-unifrac-anosim-'$category_2'-significance.qzv'  --p-pairwise
 	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_1   --o-visualization 'core-metrics-results/bray_curtis-anosim-'$category_1'-significance.qzv'  --p-pairwise
 	qiime diversity beta-group-significance   --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza   --m-metadata-file $mapping_file  --p-method anosim --m-metadata-column $category_2   --o-visualization 'core-metrics-results/bray_curtis-anosim-'$category_2'-significance.qzv'  --p-pairwise
-	qiime diversity alpha-rarefaction   --i-table table.qza   --i-phylogeny rooted-tree.qza   --p-max-depth $depth  --m-metadata-file $mapping_file  --o-visualization alpha-rarefaction.qzv  --p-steps 50
+	qiime diversity alpha-rarefaction   --i-table table.qza   --i-phylogeny rooted-tree.qza   --p-max-depth $depth  --m-metadata-file $mapping_file  --o-visualization alpha-rarefaction.qzv   --p-steps 50
 	##These following two commands work only for column with numeric values:
 	##qiime emperor plot   --i-pcoa core-metrics-results/unweighted_unifrac_pcoa_results.qza   --m-metadata-file $mapping_file --p-custom-axis $category_2   --o-visualization 'core-metrics-results/unweighted-unifrac-emperor-'$category_2'.qzv'
 	##qiime emperor plot   --i-pcoa core-metrics-results/bray_curtis_pcoa_results.qza   --m-metadata-file $mapping_file   --p-custom-axis $category_2   --o-visualization 'core-metrics-results/bray-curtis-emperor-'$category_2'.qzv'
 
 
-	echo "#alpha dviersity summary"
+	echo "##############################################################\n#alpha dviersity summary"
 	mkdir alpha
 	qiime diversity alpha --i-table table.qza --p-metric chao1 --output-dir alpha/chao1
 	qiime diversity alpha --i-table table.qza --p-metric shannon --output-dir alpha/shannon
@@ -214,7 +212,7 @@ COMMENTS1
  	qiime tools export alpha/faith_pd/alpha_diversity.qza --output-dir alpha/faith_pd/
  	paste alpha/observed_otus/alpha-diversity.tsv alpha/chao1/alpha-diversity.tsv alpha/shannon/alpha-diversity.tsv alpha/faith_pd/alpha-diversity.tsv | awk -F'\t' 'BEGIN{OFS="\t"}{print $1, $2, $4, $6, $8}' >  alpha/alpha-summary.tsv
 
-	echo "#Export necessary files for future analysis"
+	echo "##############################################################\n#Export necessary files for future analysis"
 	for f in rep-seqs.qza table.qza taxonomy.qza ; do echo $f; qiime tools export $f --output-dir exported; done
 	for f in alpha-rarefaction.qzv table.qzv taxa-bar-plots.qzv; do echo $f; qiime tools export $f --output-dir exported_qzv; done
 	qiime tools export rooted-tree.qza --output-dir exported/
@@ -223,9 +221,10 @@ COMMENTS1
 	mv exported/tree.nwk exported/tree.unrooted.nwk 
 	biom add-metadata -i exported/feature-table.biom -o exported/feature-table.taxonomy.biom --observation-metadata-fp exported/taxonomy.tsv --observation-header OTUID,taxonomy,confidence
 	biom convert -i exported/feature-table.taxonomy.biom -o exported/feature-table.taxonomy.txt --to-tsv --header-key taxonomy
+	biom convert -i exported/feature-table.taxonomy.biom -o exported/feature-table.txt --to-tsv
 	sed 's/taxonomy/Consensus Lineage/' < exported/feature-table.taxonomy.txt | sed 's/ConsensusLineage/Consensus Lineage/' > exported/feature-table.ConsensusLineage.txt
 
-	echo "#Generate heatmaps for top OTUs with different levels with minimum frequence reads supported"
+	echo "##############################################################\n#Generate heatmaps for top OTUs with different levels with minimum frequence reads supported"
 	mkdir exported/collapsed
 	mkdir exported/${min_freq}
 	for n in 2 3 4 5 6 7;
@@ -233,16 +232,18 @@ COMMENTS1
 		qiime taxa collapse   --i-table table.qza   --i-taxonomy taxonomy.qza   --p-level $n   --o-collapsed-table exported/collapsed/table-l${n}.qza;
 		qiime feature-table filter-features   --i-table exported/collapsed/table-l${n}.qza   --p-min-frequency $min_freq  --o-filtered-table exported/${min_freq}/table-l${n}.${min_freq}.qza; 
 		qiime feature-table heatmap --i-table exported/${min_freq}/table-l${n}.${min_freq}.qza --m-metadata-file $mapping_file --m-metadata-column $category_1 --o-visualization exported/${min_freq}/table-l${n}.${min_freq}.qzv;
+		qiime tools export exported/${min_freq}/table-l${n}.${min_freq}.qzv --output-dir exported/${min_freq}/table-l${n}.${min_freq}
 	done;
 
 
-	echo "#Summarize the spreadness of OTUs"
+	echo "##############################################################\n#Summarize the spreadness of OTUs"
 	qiime feature-table summarize --i-table exported/collapsed/table-l7.qza --o-visualization exported/collapsed/table-l7.qzv '--m-sample-metadata-file' $mapping_file
 
 
-	echo "#Generate the figure for the percentage of annotated level"
+	echo "##############################################################\n#Generate the figure for the percentage of annotated level"
 	perl ${SCRIPTPATH}/stat_otu_tab.pl -unif min exported/feature-table.taxonomy.txt -prefix exported/Relative/otu_table --even exported/Relative/otu_table.even.txt -spestat exported/Relative/classified_stat_relative.xls
 	perl ${SCRIPTPATH}/bar_diagram.pl -table exported/Relative/classified_stat_relative.xls -style 1 -x_title "Sample Name" -y_title "Sequence Number Percent" -right -textup -rotate='-45' --y_mun 1,7 > exported/Relative/Classified_stat_relative.svg
+	perl ${SCRIPTPATH}/pipelines/rename.pl 's/mat/txt/' exported/Relative/otu_table*mat
 
 	echo "ANCOM analaysis for differential OTU"
 	mkdir exported/ANCOM
@@ -255,7 +256,7 @@ COMMENTS1
 	done;
 
 
-	echo "#Run for PICRUST analysis and STAMP visulization"
+	echo "##############################################################\n#Run for PICRUST analysis and STAMP visulization"
 	qiime vsearch cluster-features-closed-reference --i-sequences rep-seqs.qza --i-table table.qza --i-reference-sequences $close_reference_trained --p-perc-identity 0.97 --p-threads 0 --output-dir closedRef_forPICRUSt
 	qiime feature-table summarize --i-table closedRef_forPICRUSt/clustered_table.qza --o-visualization closedRef_forPICRUSt/clustered_table.qzv --m-sample-metadata-file $mapping_file
 	qiime feature-table tabulate-seqs   --i-data closedRef_forPICRUSt/unmatched_sequences.qza   --o-visualization closedRef_forPICRUSt/unmatched_sequences.qzv
@@ -283,7 +284,7 @@ COMMENTS1
 	done;	
 	cd ..
 
-	echo "#Make phylogenetic trees for ITOL"
+	echo "##############################################################\n#Make phylogenetic trees for ITOL"
 	mkdir phylogeny
 	qiime feature-table filter-features --i-table table.qza --p-min-frequency $min_freq --o-filtered-table phylogeny/table.${min_freq}.qza
 	qiime tools export phylogeny/table.${min_freq}.qza --output-dir phylogeny
@@ -302,27 +303,68 @@ COMMENTS1
 	qiime tools export phylogeny/dna-sequences.${min_freq}.rooted-tree.qza --output-dir phylogeny/
 	mv phylogeny/tree.nwk phylogeny/tree.rooted.nwk
 	perl $ITOLPERLPATH phylogeny/feature-table.taxonomy.txt 
+COMMENT1
 
-<<COMMENT3
-	echo "#Generate the absolute directory for enviromental factors relational analysis"
-	cd exported/
-	perl ~/cheng/pipelines/Queena/lib/00.Commbin/test_bin/stat_otu_tab.pl -unif min feature-table.taxonomy.txt --prefix Absolute/otu_table -nomat -abs -spestat Absolute/classified_stat.xls
-	cd Absolute
-	python ~/cheng/pipelines/Queena/lib/HC/Model/RDA.py -i otu_table.p.absolute.mat -g ../../group -e ../../env.list -o Phylum.rda.pdf
-	python ~/cheng/pipelines/Queena/lib/HC/Model/Permanova.py -i otu_table.p.absolute.mat -g ../../group -e ../../env.list -m t -n 50
-	cd ../../
-COMMENT3
 
-	echo "#Run R script for additional R related figure generation"
+	echo "##############################################################\n#Organize the Essential folder ----- part1"
+	mkdir Essential
+	qiime tools export demux.qzv --output-dir Essential/1-demux/
+	qiime tools export taxa-bar-plots.qzv --output-dir Essential/2-OTUTable/
+	cp -r exported/Relative/ Essential/2-OTUTable/
+	mkdir Essential/2-OTUTable/heatmap
+	cp -r exported/exported/1000/table-l2.1000 exported/exported/1000/table-l6.1000 Essential/2-OTUTable/heatmap
+	qiime tools export exported/ANCOM/ANCOM.l2.qzv --output-dir Essential/3-DiffOTU/ANCOM/phylum
+	qiime tools export exported/ANCOM/ANCOM.l6.qzv --output-dir Essential/3-DiffOTU/ANCOM/genus
+
+
+	echo "##############################################################\n#Run Qiime1 for differOTU analysis"
+	source deactivate
+	source activate qiime1
+	mkdir exported/DiffOTU
+	biom convert -i exported/Relative/otu_table.even.txt -o exported/DiffOTU/otu_table.even.biom --to-hdf5 --table-type="OTU table" --process-obs-metadata taxonomy
+	summarize_taxa.py -i exported/DiffOTU/otu_table.even.biom -a -o exported/DiffOTU/tax
+	summarize_taxa.py -i exported/DiffOTU/otu_table.even.biom -a -L 7 -o exported/DiffOTU/tax
+	group_significance.py -i exported/DiffOTU/tax/otu_table.even_L7.biom -m sample-metadata.tsv -c Group1 -s kruskal_wallis -o exported/DiffOTU/kruskal_wallis_Group1_diffOTU.txt --biom_samples_are_superset --print_non_overlap
+	for n4 in 2 3 4 5 6 7;
+		do echo $n4;
+		group_significance.py -i exported/DiffOTU/tax/otu_table.even_L${n4}.biom -m sample-metadata.tsv -c $category_1 -s kruskal_wallis -o exported/DiffOTU/kruskal_wallis_${category_1}_diffOTU_L{$n4}.txt --biom_samples_are_superset --print_non_overlap
+		group_significance.py -i exported/DiffOTU/tax/otu_table.even_L${n4}.biom -m sample-metadata.tsv -c $category_2 -s kruskal_wallis -o exported/DiffOTU/kruskal_wallis_${category_2}_diffOTU_L{$n4}.txt --biom_samples_are_superset --print_non_overlap
+		group_significance.py -i exported/DiffOTU/tax/otu_table.even_L${n4}.biom -m sample-metadata.tsv -c $category_1 -s ANOVA -o exported/DiffOTU/ANOVA_${category_1}_diffOTU_L{$n4}.txt --biom_samples_are_superset --print_non_overlap
+		group_significance.py -i exported/DiffOTU/tax/otu_table.even_L${n4}.biom -m sample-metadata.tsv -c $category_2 -s ANOVA -o exported/DiffOTU/ANOVA_${category_2}_diffOTU_L{$n4}.txt --biom_samples_are_superset --print_non_overlap
+	done;
+
+	echo "##############################################################\n#Run R script for additional R related figure generation"
 	source deactivate
 	mkdir R_output
-	cp $READMEORIGINALPATH ./R_output/
+	cp $mapping_file ./R_output/sample-metadata.txt
+	cp exported/feature-table.txt ./R_output/feature-table.PLSDA.txt
+	perl -p -i.bak -e 's/'#OTU ID'//' ./R_output/feature-table.PLSDA.txt
+	sort ./R_output/sample-metadata.txt > ./R_output/sample-metadata.PLSDA.txt
+
 	Rscript RRelatedOutput.R $mapping_file $category_1
 	perl ${SCRIPTPATH}/table_data_svg.pl --colors cyan-orange R_output/bray_matrix.txt R_output/wunifrac_matrix.txt R_output/unifrac_matrix.txt --symbol 'Beta Diversity' > R_output/BetaDiversity_heatmap.svg
-	${SCRIPTPATH}/microbiome_helper/biom_to_stamp.py -m KEGG_Pathways closedRef_forPICRUSt/feature-table.metagenome.biom > closedRef_forPICRUSt/feature-table.metagenome.KEGG_Pathways.STAMP.spf
+	${SCRIPTPATH}/biom_to_stamp.py -m KEGG_Pathways closedRef_forPICRUSt/feature-table.metagenome.biom > closedRef_forPICRUSt/feature-table.metagenome.KEGG_Pathways.STAMP.spf
 
 
-	echo "#Organize the result files"
+	echo "##############################################################\n#Generate the absolute directory for enviromental factors relational analysis"
+	cd exported/
+	perl ${SCRIPTPATH}/stat_otu_tab.pl -unif min feature-table.taxonomy.txt --prefix Absolute/otu_table -nomat -abs -spestat Absolute/classified_stat.xls
+	cd Absolute
+	for n5 in p c o f g s;
+		echo $n5;
+		python ${SCRIPTPATH}/RDA.py -i otu_table.${n5}.absolute.mat -g ../../group -e ../../env.list -o L${5}.rda.pdf
+	done;
+	cd ../../
+
+
+	echo "##############################################################\n#Organize the Essential folder ----- part2"
+	mkdir Essential/5-BetaDiversity Essential/4-AlphaDiversity
+	cp exported/feature-table.taxonomy.txt Essential/2-OTUTable/
+	cp R_output/bray_matrix.txt R_output/wunifrac_matrix.txt R_output/unifrac_matrix.txt R_output/*unifrac_NMDS.pdf R_output/bray_NMDS.pdf R_output/P*_plot.pdf Essential/5-BetaDiversity/
+	cp alpha/alpha-summary.tsv Essential/4-AlphaDiversity/
+	cp exported/kruskal_wallis* exported/ANOVA* Essential/3-DiffOTU/
+
+	echo "##############################################################\n#Organize the result files"
 	organize_deliverable_structure $category_1
 
 }

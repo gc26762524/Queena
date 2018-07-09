@@ -1,11 +1,16 @@
 #!/usr/bin/perl -w
+
+#Annotated by Cheng Guo, 2018.05.03. The script is confirmed correct that all relative/absolute abundance is as expected.
+
 use strict;
 use FindBin qw($Bin);
 use Getopt::Long;
 my ($prefix,$outsel,$abs,$sufix,$nomat,$even,$unif,$spestat);
+
 GetOptions("prefix:s"=>\$prefix,"outsel:s"=>\$outsel,"abs"=>\$abs,"sufix:s"=>\$sufix,"nomat"=>\$nomat,
     "even:s"=>\$even,"unif:s"=>\$unif,"spestat:s"=>\$spestat);
 @ARGV || die"Name: stat_otu_tab.pl
+
 Usage: perl stat_otu_tab.pl <otu_table.txt> [prefix]
     --prefix <str>      set outfile prefix, default to be ARGV[0] or ARGV[1]
     --abs               output stat at absolute aubndant, default at relative
@@ -14,31 +19,46 @@ Usage: perl stat_otu_tab.pl <otu_table.txt> [prefix]
     --unif <str>        set uniformization Tag number, min/max/med/avg means the min/max/med/avg Tag number, default=med
     --spestat <file>    output species Number stat at {k,p,c,o,f,g,s} level
     outfile contain: 1 prefix.relative.mat, 2 prefix.{k,p,c,o,f,g,s}.relative.mat
+
 Note:
-    1. -even no used while -abs or -nomat.
+    1. -even not used while -abs or -nomat.
 Update:
-    1. Others' relavite abundance=0 if <0, 2014-10-16,chen,line 133\n";
+    1. Others' relative abundance=0 if <0, 2014-10-16,chen,line 133\n";
 #====================================================================================
+
+#A typical command used: $ perl ~/pipelines/Github/Queena/stat_otu_tab.pl -unif min feature-table.taxonomy.txt -prefix Relative/otu_table --even Relative/otu_table.even.txt -spestat Relative/classified_stat_relative.xls
+
 my (@spe_name,@tag_num);
 my (%matrix,%outsel);
 my ($otu_tab) = @ARGV;
+
 $prefix ||= ($ARGV[1] || $otu_tab);
+
+#make directory for Relative and put the otu_table as the prefix for any file generated.
 if($prefix =~ /^(\S+)\/(\S+)/){
     (-d $1) || mkdir"$1";
     (-w $1) || ($prefix = $2);
 }
+
+#output level of the taxonomy
 if($outsel){
     for(split/,/,$outsel){
         $outsel{$_} = 1;
     }
 }
+
+
+#generate the prefix.relative.mat table. 
 Tag_stat($otu_tab,\@tag_num);
 if(!$nomat){
     open OUT,">$prefix.relative.mat" || die$!;
 }
+
 ($nomat || $abs) && ($even = 0);
 $unif ||= 'med';
 my %samp_spe_num;
+
+#generate the %matrix with the max() function correctly but I am not totally follow the script.
 open IN,$otu_tab || die$!;
 while(<IN>){
     chomp;
@@ -76,6 +96,8 @@ while(<IN>){
 }
 close IN;
 $nomat || close(OUT);
+
+#output species Number stat at {k,p,c,o,f,g,s} level
 if($spestat){
     open SPT,">$spestat" || die$!;
     my @class = qw(Kingdom Phylum Class Order Family Genus Species);
@@ -95,6 +117,8 @@ if($spestat){
     }
     close SPT;
 }
+
+#Here is calling the sample_draw.pl script to draw samples with different sampling size
 if($even){
     my @tnum = sort {$a<=>$b} @tag_num;
     if($unif=~/min/){
@@ -109,8 +133,13 @@ if($even){
         $unif = int($unif / @tnum);
     }
     system"perl $Bin/samples_draw.pl $prefix.relative.mat -size $unif > $even";
+    print "AAAAAAAAAAAAAAAAAAAAAAAAAAa",$unif, "\n";
 }
+
+#check $abs is difined or not
 $sufix ||= $abs ? "absolute" : "relative";
+
+
 for my $level(keys %matrix){
     open OUT,">$prefix.$level.$sufix.mat" || die$!;
     print OUT join("\t","Taxonomy",@spe_name,"Tax_detail"),"\n";
@@ -135,6 +164,7 @@ for my $level(keys %matrix){
     print OUT join("\t","Others",@tol_tax,"Others\n");
     close OUT;
 }
+
 #=======================================================================================================
 sub Tag_stat{
     my ($otu_tab,$tag_num) = @_;
