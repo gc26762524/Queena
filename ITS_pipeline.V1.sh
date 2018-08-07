@@ -130,7 +130,7 @@ MAIN() {
 	#paired-end
 	qiime tools import   --type 'SampleData[PairedEndSequencesWithQuality]'  --input-path $manifest_file --output-path demux.qza --source-format PairedEndFastqManifestPhred33
 	qiime demux summarize --i-data demux.qza --o-visualization demux.qzv
-COMMENTS1
+
 
 	echo "#Use DADA2 for quality control and feature table construction"
 	##single-end for 3F
@@ -141,12 +141,12 @@ COMMENTS1
 	##paired-end for 3F
 	#qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 250 --p-trunc-len-r 210 --p-trim-left-f 10 --p-trim-left-r 10 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
 	##paired-end for 3F
-	qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 215 --p-trunc-len-r 160 --p-trim-left-f 10 --p-trim-left-r 10 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
+	#qiime dada2 denoise-paired --i-demultiplexed-seqs demux.qza --p-trunc-len-f 215 --p-trunc-len-r 160 --p-trim-left-f 10 --p-trim-left-r 10 --o-representative-sequences rep-seqs-dada2.qza --o-table table-dada2.qza  --p-n-threads 0
 
 	mv rep-seqs-dada2.qza rep-seqs.withCandM.qza
 	mv table-dada2.qza table.withCandM.qza
-
-
+COMMENTS1
+<<COMMENT3
 	echo "#Filter out Choloroplast and Mitochondira"
 	check_file $reference_trained
 	qiime feature-classifier classify-sklearn   --i-classifier $reference_trained  --i-reads rep-seqs.withCandM.qza  --o-classification taxonomy.withCandM.qza
@@ -178,6 +178,7 @@ COMMENTS1
 	qiime phylogeny midpoint-root   --i-tree unrooted-tree.qza   --o-rooted-tree rooted-tree.qza
 
 
+COMMENT3
 
 	echo "#Core alpha and beta diversity analysis"
 	qiime diversity core-metrics-phylogenetic   --i-phylogeny rooted-tree.qza   --i-table table.qza   --p-sampling-depth $depth   --m-metadata-file $mapping_file  --output-dir core-metrics-results
@@ -214,6 +215,7 @@ COMMENTS1
  	qiime tools export alpha/faith_pd/alpha_diversity.qza --output-dir alpha/faith_pd/
  	paste alpha/observed_otus/alpha-diversity.tsv alpha/chao1/alpha-diversity.tsv alpha/shannon/alpha-diversity.tsv alpha/faith_pd/alpha-diversity.tsv | awk -F'\t' 'BEGIN{OFS="\t"}{print $1, $2, $4, $6, $8}' >  alpha/alpha-summary.tsv
 
+
 	echo "#Export necessary files for future analysis"
 	for f in rep-seqs.qza table.qza taxonomy.qza ; do echo $f; qiime tools export $f --output-dir exported; done
 	for f in alpha-rarefaction.qzv table.qzv taxa-bar-plots.qzv; do echo $f; qiime tools export $f --output-dir exported_qzv; done
@@ -225,6 +227,7 @@ COMMENTS1
 	biom convert -i exported/feature-table.taxonomy.biom -o exported/feature-table.taxonomy.txt --to-tsv --header-key taxonomy
 	sed 's/taxonomy/Consensus Lineage/' < exported/feature-table.taxonomy.txt | sed 's/ConsensusLineage/Consensus Lineage/' > exported/feature-table.ConsensusLineage.txt
 
+<<COMMENT4
 	echo "#Generate heatmaps for top OTUs with different levels with minimum frequence reads supported"
 	mkdir exported/collapsed
 	mkdir exported/${min_freq}
@@ -303,15 +306,15 @@ COMMENTS1
 	mv phylogeny/tree.nwk phylogeny/tree.rooted.nwk
 	perl $ITOLPERLPATH phylogeny/feature-table.taxonomy.txt 
 
-<<COMMENT3
-	echo "#Generate the absolute directory for enviromental factors relational analysis"
-	cd exported/
-	perl ~/cheng/pipelines/Queena/lib/00.Commbin/test_bin/stat_otu_tab.pl -unif min feature-table.taxonomy.txt --prefix Absolute/otu_table -nomat -abs -spestat Absolute/classified_stat.xls
-	cd Absolute
-	python ~/cheng/pipelines/Queena/lib/HC/Model/RDA.py -i otu_table.p.absolute.mat -g ../../group -e ../../env.list -o Phylum.rda.pdf
-	python ~/cheng/pipelines/Queena/lib/HC/Model/Permanova.py -i otu_table.p.absolute.mat -g ../../group -e ../../env.list -m t -n 50
-	cd ../../
-COMMENT3
+
+	#echo "#Generate the absolute directory for enviromental factors relational analysis"
+	#cd exported/
+	#perl ~/cheng/pipelines/Queena/lib/00.Commbin/test_bin/stat_otu_tab.pl -unif min feature-table.taxonomy.txt --prefix Absolute/otu_table -nomat -abs -spestat Absolute/classified_stat.xls
+	#cd Absolute
+	#python ~/cheng/pipelines/Queena/lib/HC/Model/RDA.py -i otu_table.p.absolute.mat -g ../../group -e ../../env.list -o Phylum.rda.pdf
+	#python ~/cheng/pipelines/Queena/lib/HC/Model/Permanova.py -i otu_table.p.absolute.mat -g ../../group -e ../../env.list -m t -n 50
+	#cd ../../
+
 
 	echo "#Run R script for additional R related figure generation"
 	source deactivate
@@ -324,6 +327,7 @@ COMMENT3
 
 	echo "#Organize the result files"
 	organize_deliverable_structure $category_1
+COMMENT4
 
 }
 

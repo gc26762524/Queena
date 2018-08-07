@@ -10,8 +10,8 @@ usage = '%prog -[i]'
 p = OptionParser(usage = usage)
 p.add_option('-i', '--input', dest = 'input', metavar = '*.absoult.xls',
 			help = 'taxonomic count data file')
-p.add_option('-o', '--output', dest = 'output', metavar = '*.rda.pdf', default = 'rda.pdf',
-			help = 'given an output file name, default is rda.pdf')
+p.add_option('-o', '--output', dest = 'output', metavar = '*.RDA.pdf', default = 'RDA.pdf',
+			help = 'given an output file name, default is RDA.pdf')
 p.add_option('-g', '--group', dest = 'group', metavar = 'group',
 			help = 'annotate the points with the same color from this group file')
 p.add_option('-e', '--env', dest = 'env', metavar = 'env.list',
@@ -122,13 +122,13 @@ if (dcam > 4){
 	pre <- "RDA"
 }
 ccascore <- scores(cca)
-write.table(ccascore$sites, file = paste("%s/", pre, ".sample.xls", sep = ""), sep = "\\t")
-write.table(ccascore$species, file = paste("%s/", pre, ".sp.xls", sep = ""), sep = "\\t")
+write.table(ccascore$sites, file = paste("%s/", pre, ".sample.txt", sep = ""), sep = "\\t")
+write.table(ccascore$species, file = paste("%s/", pre, ".bacteria.txt", sep = ""), sep = "\\t")
 envfit <- envfit(cca, envdata, permu = 2000, na.rm = TRUE)
 rp <- cbind(as.matrix(envfit$vectors$r), as.matrix(envfit$vectors$pvals))
 colnames(rp) <- c("r2", "Pr(>r)")
 env <- cbind(envfit$vectors$arrows, rp)
-write.table(as.data.frame(env), file = paste("%s/", pre, "envfit.xls", sep = ""),sep = "\\t")
+write.table(as.data.frame(env), file = paste("%s/", pre, ".envfit.txt", sep = ""),sep = "\\t")
 CCAE1 <- as.numeric(env[, 1])
 CCAE2 <- as.numeric(env[, 2])
 CCAS1 <- as.numeric(ccascore$sites[, 1])
@@ -187,7 +187,9 @@ points(
 	)''',
 file = rscript)
 
-if options.text == 'T':
+#Modify to remove the sample name on the plot.
+#if options.text == 'T':
+if options.text == 'NONE':
 	print ('''
 text <- rownames(ccascore$sites)
 text(

@@ -1,0 +1,13 @@
+	variable	.y.	group1	group2	p	p.adj	p.format	p.signif	method
+1	observed_otus	value	B	A	0.976753894	1.000	0.9768	ns	Wilcoxon
+2	observed_otus	value	B	C	0.004250119	0.034	0.0043	**	Wilcoxon
+3	observed_otus	value	A	C	0.001257458	0.014	0.0013	**	Wilcoxon
+4	chao1	value	B	A	0.976753894	1.000	0.9768	ns	Wilcoxon
+5	chao1	value	B	C	0.004250119	0.034	0.0043	**	Wilcoxon
+6	chao1	value	A	C	0.001257458	0.014	0.0013	**	Wilcoxon
+7	shannon	value	B	A	0.137409595	0.550	0.1374	ns	Wilcoxon
+8	shannon	value	B	C	0.001010076	0.012	0.0010	**	Wilcoxon
+9	shannon	value	A	C	0.023741395	0.119	0.0237	*	Wilcoxon
+10	faith_pd	value	B	A	0.004722518	0.034	0.0047	**	Wilcoxon
+11	faith_pd	value	B	C	0.002125457	0.019	0.0021	**	Wilcoxon
+12	faith_pd	value	A	C	0.413406934	1.000	0.4134	ns	Wilcoxon

@@ -43,41 +43,61 @@ print(rs)
 qiimedata = import_qiime(txt, map, tre, rs)
 
 gpt <- subset_taxa(qiimedata, Kingdom=="Bacteria")
-gpt <- prune_taxa(names(sort(taxa_sums(gpt),TRUE)[1:200]), gpt)
+gpt <- prune_taxa(names(sort(taxa_sums(gpt),TRUE)[1:30]), gpt)
 gpt <- prune_taxa(names(sort(taxa_sums(gpt),TRUE)), gpt)
 
 head(tax_table(gpt)[,2])
+head(tax_table(gpt)[1,])
 
-print("#Generate phylogenetic trees for common phylums")
-for (selected_phylum in c('Bacteroidetes','Firmicutes','Proteobacteria')){
-  print(paste("Making tree plots for", selected_phylum, sep=" "))
-  GP.chl <- subset_taxa(gpt, Phylum==selected_phylum)
-  phylogeny_outputpdfname <- paste(selected_phylum, ".phylogeny.pdf", sep="")
-  pdf( phylogeny_outputpdfname, width=12, height=14)
-  plot<-plot_tree(GP.chl, color=category1, shape="Family", label.tips="Genus", size="abundance", plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
-  print(plot+ ggtitle(selected_phylum))
-  dev.off()
-}
 
-pdf("Bacteria.phylogeny.pdf", width=12, height=14)
-plot<-plot_tree(gpt, color=category1, shape="Phylum", label.tips="Family", size="abundance", text.size=2, plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
-print(plot + ggtitle("Bacteria"))
-dev.off()
+# print("#Generate phylogenetic trees for common phylums")
+# for (selected_phylum in c('Bacteroidetes','Firmicutes','Proteobacteria')){
+#   print(paste("Making tree plots for", selected_phylum, sep=" "))
+#   GP.chl <- subset_taxa(gpt, Phylum==selected_phylum)
+#   phylogeny_outputpdfname <- paste(selected_phylum, ".phylogeny.pdf", sep="")
+#   pdf( phylogeny_outputpdfname, width=12, height=14)
+#   plot<-plot_tree(GP.chl, color=category1, shape="Family", label.tips="Genus", size="abundance", plot.margin=0.1, base.spacing=0.04, ladderize=TRUE, nodelabf=nodeplotblank)
+#   print(plot+ ggtitle(selected_phylum))
+#   dev.off()
+# }
+
+# pdf("Bacteria.phylogeny.pdf", width=12, height=14)
+# plot<-plot_tree(gpt, color=category1,  label.tips="Family",  shape="Phylum", size="abundance", text.size=4, plot.margin=0.1, base.spacing=0.06, ladderize=TRUE, nodelabf=nodeplotblank)
+# print(plot + ggtitle("Phylogenetics trees of Family of Bacteria"))
+# dev.off()
+
 
 print("#Generate the NMDS plot for betadiversity")
 for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
   GP.ord <- ordinate(gpt, "NMDS", distance_matrix)
   NMDS_outputpdfname <- paste(distance_matrix, "_NMDS.pdf", sep="")
+  NMDS_ordtxtname <- paste(distance_matrix, "_NMDS.ord.txt", sep="")
   pdf(NMDS_outputpdfname, width=10, height=12)
   p2 = plot_ordination(gpt, GP.ord, type="samples", color=category1) 
   p3 = p2  + geom_point(size=5) + geom_text_repel(aes(label=Description),hjust=0, vjust=2, size=4) + stat_ellipse()
   print(p3 + ggtitle(distance_matrix))
   dev.off()
+  write.table(as.matrix(GP.ord), NMDS_ordtxtname, quote=FALSE, col.names=NA, sep="\t")
 }
+
+print("#Generate the PCoA 2D plot for betadiversity")
+for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
+  GP.ord <- ordinate(gpt, "PCoA", distance_matrix)
+  PCoA_outputpdfname <- paste(distance_matrix, "_PCoA_2D.pdf", sep="")
+  PCoA_ordtxtname <- paste(distance_matrix, "_PCoA_2D.ord.txt", sep="")
+  pdf(PCoA_outputpdfname, width=10, height=12)
+  p2 = plot_ordination(gpt, GP.ord, type="samples", color=category1) 
+  p3 = p2  + geom_point(size=5) + geom_text_repel(aes(label=Description),hjust=0, vjust=2, size=4) + stat_ellipse()
+  print(p3 + ggtitle(distance_matrix))
+  dev.off()
+  write.table(as.matrix(GP.ord), PCoA_ordtxtname, quote=FALSE, col.names=NA, sep="\t")
+}
+
+
 
 print("#calculate distance")
 for (distance_matrix in c('bray', 'unifrac', 'jaccard', 'wunifrac')){
-  beta_heatmap_outputpdfname <- paste(distance_matrix, "_betadiversity_heatmap.pdf", sep="")
+  beta_heatmap_outputpdfname <- paste(distance_matrix, "_betadiversity_summary.pdf", sep="")
   pdf(beta_heatmap_outputpdfname)
   Dist <- distance(qiimedata, method=distance_matrix)
   heatmap.2(as.matrix(Dist), main=distance_matrix)
@@ -110,7 +130,7 @@ X = read.table(plsdatxt, head=TRUE)
 tX<-t(X)
 #head(tX)
 A = read.table(plsdameta, head=FALSE)
-Y = A$V4
+Y = A$V2
 summary(Y)
 dim(X)
 
@@ -120,6 +140,8 @@ plot(pca.srbct)  # screeplot of the eingenvalues (explained variance per compone
 pdf("PCA_plot.pdf")
 plotIndiv(pca.srbct, group = Y, ind.names = FALSE, legend = TRUE, ellipse = TRUE, title = 'PCA plot')
 dev.off()
+#write.table(as.matrix(pca.srbct), “PCA_ord.txt”, quote=FALSE, col.names=NA, sep="\t")
+
 
 srbct.plsda <- plsda(tX, Y)  # set ncomp to 10 for performance assessment later
 plsda.vip <- vip(srbct.plsda)
@@ -132,10 +154,11 @@ dev.off()
 pdf("PLSDA_comp_plot.pdf")
 plotIndiv(srbct.plsda , comp = 1:2, group = Y, ellipse.level = 0.75,size.xlabel = 15, size.ylabel = 15,size.axis = 15,size.legend = 15,size.legend.title = 15,ind.names = FALSE, title = "Supervised PLS-DA on OTUs",abline = T,legend = TRUE,ellipse = T)
 dev.off()
+#write.table(as.matrix(srbct.plsda), “PLSDA_ord.txt”, quote=FALSE, col.names=NA, sep="\t")
 
 
 
-##################Use ggplot to draw alpha diversity boxplot.
+##################Use ggplot to draw alpha diversity boxplot. 
 library("ggplot2") # load related packages
 #read files.
 alphadatxt = paste(this.dir, "/alpha/alpha-summary.tsv", sep="")
@@ -145,12 +168,12 @@ alpha = read.table(alphadatxt, header=T, row.names= 1, sep="\t")
 
 # merge information for script
 index = cbind(alpha, design[match(rownames(alpha), rownames(design)), ]) 
-# run shannon, observed_otus, faith_pd separately as the aes function is not accepting variables!!!
-p = ggplot(index, aes(x=Group1, y=observed_otus, color=Group1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="observed_otus index")
+# run shannon, observed_otus, faith_pd separately as the aes function is not accepting variables!!! Hard coded for Group1 as well. Really bad script.
+p = ggplot(index, aes_string(x=category1, y="observed_otus", color=category1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="observed_otus index")
 ggsave(paste("alpha_diversity_observed_otus.boxplot.pdf", sep=""), p, width = 5, height = 3)
 
-p = ggplot(index, aes(x=Group1, y=shannon, color=Group1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="shannon index")
+p = ggplot(index, aes_string(x=category1, y="shannon", color=category1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="shannon index")
 ggsave(paste("alpha_diversity_shannon.boxplot.pdf", sep=""), p, width = 5, height = 3)
 
-p = ggplot(index, aes(x=Group1, y=faith_pd, color=Group1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="faith_pd index")
+p = ggplot(index, aes_string(x=category1, y="faith_pd", color=category1)) + geom_boxplot(alpha=1, outlier.size=0, size=0.7, width=0.5, fill="transparent") +  geom_jitter( position=position_jitter(0.17), size=1, alpha=0.7) + labs(x="Groups", y="faith_pd index")
 ggsave(paste("alpha_diversity_faith_pd.boxplot.pdf", sep=""), p, width = 5, height = 3)

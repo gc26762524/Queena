@@ -63,19 +63,24 @@ open IN,$otu_tab || die$!;
 while(<IN>){
     chomp;
     my @l = /\t/ ? split /\t/ : split;
+    #print "BBBBBBBBBBBBBBBB", $_, "\n";
     if(!@spe_name){
         /^#OTU/ || next;
         $nomat || (print OUT $_,"\n");
         @spe_name = @l[1..$#l];
         ($spe_name[-1] =~ m/^Tax/i) && (pop @spe_name);
+        #print "CCCCCCCCCCC", $spe_name[-1], "\n";
     }elsif(!@tag_num){
         @tag_num = @l[1..$#l];
     }elsif(!/^#/){
         my @ll;
         $abs && (@ll = @l);
+        #print "DDDDDDDDDDD", "\t", $abs, "\n";
         if(!($nomat && $abs)){
             for my $i(0..$#tag_num){
+                #print "AAAAAAAAAAAAAAAAAAAAAAAAAA", "\t", $i, "\t", $#tag_num, "\t", $l[$i+1], "\t", $tag_num[$i], "\n";
                 $l[$i+1] /= $tag_num[$i];
+                #print "AAAAAAAAAAAAAAAAAAAAAAAAAA", "\t", $i, "\t", $#tag_num, "\t", $l[$i+1], "\t", $tag_num[$i], "\t", $l[$i+1], "\n";
             }
         }
         $nomat || (print OUT join("\t",@l),"\n");
@@ -91,6 +96,7 @@ while(<IN>){
                 $spestat && ($samp_spe_num{$level}->[$i] += $l[$i+1]);
             }
             $matrix{$level}{$full_tax}->[$#tag_num+1] = max(@{$matrix{$level}{$full_tax}});
+            #print "EEEEEEEEEEEEE", $matrix{$level}{$full_tax}->[$#tag_num+1], "\n";
         }
     }
 }
@@ -133,7 +139,7 @@ if($even){
         $unif = int($unif / @tnum);
     }
     system"perl $Bin/samples_draw.pl $prefix.relative.mat -size $unif > $even";
-    print "AAAAAAAAAAAAAAAAAAAAAAAAAAa",$unif, "\n";
+    #print "AAAAAAAAAAAAAAAAAAAAAAAAAAa",$unif, "\n";
 }
 
 #check $abs is difined or not
